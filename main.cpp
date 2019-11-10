@@ -5,7 +5,15 @@
 //  Created by Madina Sadirmekova on 11/8/19.
 //  Copyright © 2019 Madina Sadirmekova. All rights reserved.
 //
-
+    Plan:
+    1)we are going to get user preference
+    2)based on that do sorting
+    3)display the options
+    4)optinons are based on index, we let the user choose the index, thus reserve it
+    5)I thought it will be better to let the reservation be only for two weeks with 10 customers
+        but entering 10 people's data seems time consuming, so probaly will randomly generate their choices.
+    And sorry I did not have time, to focus on project since recently I have registered for another class and had midterm yesterday :(
+        
 #include<iostream>
 #include<string>
 using namespace std;
