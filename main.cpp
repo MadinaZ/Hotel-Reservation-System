@@ -4,17 +4,15 @@
 //
 //  Created by Madina Sadirmekova on 11/8/19.
 //  Copyright © 2019 Madina Sadirmekova. All rights reserved.
-//
-    Plan:
-    1)we are going to get user preference
-    2)based on that do sorting
-    3)display the options
-    4)optinons are based on index, we let the user choose the index, thus reserve it
-    5)I thought it will be better to let the reservation be only for two weeks with 10 customers
-        But entering 10 people's data seems time consuming, so probaly will randomly generate their choices.
-        Or I will creat different text file with already exisitng data
-    And sorry I did not have time, to focus on project since recently I have registered for another class and had midterm yesterday :(
-        
+// Plan:
+//   1)we are going to get user preference
+//   2)based on that do sorting
+//   3)display the options
+//   4)optinons are based on index, we let the user choose the index, thus reserve it
+//   5)I thought it will be better to let the reservation be only for two weeks with 10 customers
+//       But entering 10 people's data seems time consuming, so probaly will randomly generate their choices.
+//       Or I will creat different text file with already exisitng data
+
 #include<iostream>
 #include<string>
 using namespace std;
@@ -61,32 +59,62 @@ int main() {
     Customer client;
 
     fstream file;
-
-    string fname, fstar, flocation, fprice, frate;
-    int budget, cust_num, star, sstar, sprice;
-    char *location, *slocation, *sname;
-    double rate, srate;
-    char letter = 'Z';
-    cust_num = 5;
+    fstream user;
     
 
-    for(int i = 0; i < cust_num; i++)
+    string fname, fstar, flocation, fprice, frate;
+
+    int sstar, sprice, xarrival, xstay;
+    double srate, xrate;
+    
+    char *token;
+    char buf[1000];
+    const char* const tab = "\t";
+    
+    char letter = 'Z';
+    int cust_num = 10;
+    
+    int size = 10;
+    
+    user.open("User.txt");
+    if(!user.good())
+         cout<<"I/O error \n";
+    while(user.good())
     {
+        string line;
+        getline(user, line);
+        strcpy(buf, line.c_str());
+        
+        if(buf[0] == 0)//empty string
+                   continue;
+        
+        const string location (token = strtok(buf, tab));
+        const string star((token = strtok(0, tab)) ? token : "");
+        const string budget((token = strtok(0, tab)) ? token : "");
+        const string rate((token = strtok(0, tab)) ? token : "");
+        const string arrival((token = strtok(0, tab)) ? token : "");
+        const string stayLength((token = strtok(0, tab)) ? token : "");
+        
         client.id = getLetter(letter);
         cout<<"Customer: "<<client.id<<endl;
         cout<<"Enter the city: \n";
-        cin>>location;
+        cout<<location<<endl;
         cout<<"How many stars: \n";
-        cin>>star;
+        cout<<star<<endl;
         cout<<"Enter the budget: \n";
-        cin>>budget;
+        cout<<budget<<endl;
         cout<<"The rate should be above: \n";
-        cin>>rate;
+        cout<<rate<<endl;
         cout<<"How the arrival time: \n";
-        cin>>client.ArrivalTime;
+        cout<<arrival<<" of November"<<endl;
+//        xarrival = stoi(arrival);
+//        client.ArrivalTime = xarrival;
         cout<<"What is your stay length? \n";
-        cin>>client.stayLength;
+        cout<<stayLength<<" days"<<endl;
+//        xstay = stoi(stayLength);
+//        client.stayLength = xstay;
     }
+    
     
     file.open("simulation.txt");
     if(!file.good())
@@ -98,18 +126,8 @@ int main() {
         getline(file,flocation, '\n');
         getline(file,fprice, '\n');
         getline(file,frate, '\n');
-        
-        sstar= stoi(fstar);
-        srate = stof(frate);
-        int n1 = (int)fname.length();
-        int n2 = (int)flocation.length();
-        char Name[n1 + 1];
-        strcpy(Name, fname.c_str());
-        char Location[n2 + 1];
-        strcpy(Location, flocation.c_str());
-
     }
 
-    
     return 0;
 }
+
