@@ -11,7 +11,7 @@
     3)display the options
     4)optinons are based on index, we let the user choose the index, thus reserve it
     5)I thought it will be better to let the reservation be only for two weeks with 10 customers
-        because entering 10 people's data seems time consuming, so probaly will randomly generate their choices.
+        But entering 10 people's data seems time consuming, so probaly will randomly generate their choices.
     And sorry I did not have time, to focus on project since recently I have registered for another class and had midterm yesterday :(
         
 #include<iostream>
