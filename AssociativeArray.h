@@ -3,6 +3,9 @@
 #include <queue>
 using namespace std;
 
+#ifndef AssociativeArray_h
+#define AssociativeArray_h
+
 template<typename T>
 void safeDelete(T*& p)
 {
@@ -174,3 +177,4 @@ void AssociativeArray<K,V>::clear()
   siz = 0;
 }
 
+#endif AssociativeArray_h
