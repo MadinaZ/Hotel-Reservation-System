@@ -1,150 +1,176 @@
-//Programmer: Jaewon Lee
-//Programmer's ID: 1725935
+//  Programmer: Hiroaki Takeuchi
+//  Programmer's ID: 1718699
+#include <queue>
+using namespace std;
 
-#ifndef ASSOCIATIVEARRAY_LABEXCERCISE8_H
-#define ASSOCIATIVEARRAY_LABEXCERCISE8_H
+template<typename T>
+void safeDelete(T*& p)
+{
+	delete p;
+	p = nullptr;
+}
 
-#include "Queue.h"
+template<typename T>
+void safeDeleteArray(T*& p)
+{
+	delete [] p;
+	p = nullptr;
+}
 
-template <typename K, typename V>
-class AssociativeArray {
-	struct Node {
-		K key;
-		V value;
-		Node* next;
-	};
+/////////
+template<typename K, typename V>
+class AssociativeArray
+{
+  struct Node
+  {
+    Node():key(),value(),inUse(false){}
 
-	Node* firstNode;
-	int siz;
+    void copy(const Node& node)
+    {
+      this->key = node.key;
+      this->value = node.value;
+      this->inUse = node.inUse;
+    }
 
+    K key;
+    V value;
+    bool inUse;
+  };
+  
+  Node* data;
+  int siz = 0;
+  int cap;
+  void capacity(int);
+  
 public:
-	AssociativeArray() { firstNode = 0; siz = 0; }
-	AssociativeArray(const AssociativeArray<K, V>&);
-	AssociativeArray<K, V>& operator=(const AssociativeArray<K, V>&);
-	~AssociativeArray();
-	V operator[](const K&) const;
-	V& operator[](const K&);
-	bool containKey(const K&) const; // for just cheking include the key or not
-	void deleteKey(const K&);
-	Queue<K> keys(); // return all valid keys
-	int size() const;
-	void clear();
+  AssociativeArray(int = 2);
+  AssociativeArray(const AssociativeArray<K,V>&);
+  AssociativeArray<K,V>& operator=(const AssociativeArray<K,V>&);
+  ~AssociativeArray() { safeDeleteArray(data); }
+  V operator[](const K&) const;
+  V& operator[](const K&);
+  bool containsKey(const K&) const;
+  void deleteKey(const K&);
+  queue<K> keys() const;
+  int size() const { return siz; }
+  void clear();
 };
 
 template<typename K, typename V>
-AssociativeArray<K, V>::AssociativeArray(const AssociativeArray<K, V>& original) {
-	firstNode = 0;
-	Node* lastNode = 0;
-	siz = original.siz;
-
-	for (Node* p = original.firstNode; p; p = p->next) {
-		Node* temp = new Node{ p->key, p->value, 0 };
-		if (lastNode) lastNode->next = temp;
-		else firstNode = temp;
-		lastNode = temp;
-	}
+void AssociativeArray<K,V>::capacity(int cap)
+{
+  if(this->cap == cap) { return; }
+  
+  Node* temp = new Node[cap];
+  int limit = (cap < this->cap ? cap : this->cap);
+  for(int i = 0; i < limit; i++)
+    temp[i].copy(data[i]);
+  safeDeleteArray(data);
+  data = temp;
+  this->cap = cap;
 }
 
 template<typename K, typename V>
-AssociativeArray<K, V>& AssociativeArray<K, V>::operator=(const AssociativeArray<K, V>& original){
-	if (this != &original) {
-		while (firstNode) {
-			Node* p = firstNode;
-			firstNode = firstNode->next;
-			delete p;
-		}
+AssociativeArray<K,V>::AssociativeArray(int cap)
+:data(new Node[cap])
+,cap(cap)
+,siz(0)
+{}
 
-		Node* lastNode = 0;
-		siz = original.siz;
-		for (Node* p = original.firstNode; p; p = p->next) {
-			Node* temp = new Node{ p->key, p->value, 0 };
-
-			if (lastNode) lastNode->next = temp;
-			else firstNode = temp;
-			lastNode = temp;
-		}
-	}
-	return *this;
+template<typename K, typename V>
+AssociativeArray<K,V>::AssociativeArray(const AssociativeArray<K,V>& original)
+:data(new Node[original.cap])
+,cap(original.cap)
+,siz(original.siz)
+{
+  for(int i = 0; i < cap; i++)
+    data[i].copy(original.data[i]);
 }
 
 template<typename K, typename V>
-AssociativeArray<K, V>::~AssociativeArray() {
-	if (firstNode != 0) {
-		while (firstNode) {
-			Node* temp = firstNode;
-			firstNode = firstNode->next;
-			delete temp;
-		}
-	}
-	siz = 0;
+AssociativeArray<K,V>& AssociativeArray<K,V>::operator=(const AssociativeArray<K,V>& original)
+{
+  if(this == &original) { return *this; }
+  
+  safeDeleteArray(data);
+  this->cap = original.cap;
+  data = new Node[cap];
+  for(int i = 0; i < cap; i++)
+    data[i].copy(original.data[i]);
+  
+  return *this;
 }
 
 template<typename K, typename V>
-V AssociativeArray<K, V>::operator[](const K& key) const {
-	for(Node* scan = firstNode; scan; scan= scan->next)
-		if (scan->key = key) return scan->value;
-	return V(); // if return type is "const V&", return dummy
+V AssociativeArray<K,V>::operator[](const K& key) const
+{
+  for(int i = 0; i < cap; i++)
+    if(data[i].inUse && data[i].key == key)
+      return data[i].value;
+  return V();
 }
 
 template<typename K, typename V>
-V& AssociativeArray<K, V>::operator[](const K& key) {
-	for (Node* scan = firstNode; scan; scan = scan->next)
-		if (scan->key == key) 
-			return scan->value;
+V& AssociativeArray<K,V>::operator[](const K& key)
+{
+  int firstUnusedIndex = cap;
+  for(int i = 0; i < cap; i++)
+  {
+    if(data[i].inUse)
+    {
+      if(data[i].key == key)
+        return data[i].value;
+    }
+    else if(firstUnusedIndex == cap)
+      firstUnusedIndex = i;
+  }
 
-	Node* temp = new Node{ key, V(), firstNode };
-	firstNode = temp;
-	siz++;
-	return firstNode->value;
+  if(firstUnusedIndex == cap) capacity(cap * 2);
+  data[firstUnusedIndex].key = key;
+  data[firstUnusedIndex].value = V();
+  data[firstUnusedIndex].inUse = true;
+  siz++;
+  return data[firstUnusedIndex].value;
 }
 
 template<typename K, typename V>
-bool AssociativeArray<K, V>::containKey(const K& key) const {
-	for (Node* scan = firstNode; scan; scan = scan->next)
-		if (scan->key == key) return true;
-	return false;
+bool AssociativeArray<K,V>::containsKey(const K& key) const
+{
+  for(int i = 0; i < cap; i++)
+    if(data[i].inUse && data[i].key == key)
+      return true;
+  return false;
 }
 
 template<typename K, typename V>
-void AssociativeArray<K, V>::deleteKey(const K& key) {
-	Node* p;
-	Node* prev;
-	for (p = firstNode, prev = 0; p; prev = p, p = p->next)
-		if (p->key == key)
-			break;
-	if (p) {
-		siz--;
-		if (prev) prev->next = p->next;
-		else firstNode = p->next;
-		delete p;
-	}
-}
-
-template<typename K, typename V>
-Queue<K> AssociativeArray<K, V>::keys() {
-	Queue<K> listOfKey;
-	for (Node* scan = firstNode; scan; scan = scan->next)
-		listOfKey.push(scan->key);
-	return listOfKey;
-}
-
-template<typename K, typename V>
-int AssociativeArray<K, V>::size() const {
-	return siz;
-}
-
-template<typename K, typename V>
-void AssociativeArray<K, V>::clear() {
-	if (firstNode != 0) {
-		while (firstNode) {
-			Node* temp = firstNode;
-			firstNode = firstNode->next;
-			delete temp;
+void AssociativeArray<K,V>::deleteKey(const K& key)
+{
+	for(int i = 0; i < cap; i++)
+	{
+		if(data[i].inUse && data[i].key == key)
+		{
+			data[i].inUse = false;
+			siz--;
+			return;
 		}
 	}
-	siz = 0;
 }
 
+template<typename K, typename V>
+queue<K> AssociativeArray<K,V>::keys() const
+{
+  queue<K> k_queue;
+  for(int i = 0; i < cap; i++)
+    if(data[i].inUse)
+      k_queue.push(data[i].key);
+  return k_queue;
+}
 
+template<typename K, typename V>
+void AssociativeArray<K,V>::clear()
+{
+  for(int i = 0; i < cap; i++)
+    data[i].inUse = false;
+  siz = 0;
+}
 
-#endif // !ASSOCIATIVEARRAY_LABEXCERCISE8_H
