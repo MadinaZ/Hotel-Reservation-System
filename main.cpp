@@ -13,32 +13,30 @@
 //       But entering 10 people's data seems time consuming, so probaly will randomly generate their choices.
 //       Or I will creat different text file with already exisitng data
 
-#include<iostream>
+#include <iostream>
 #include<string>
-using namespace std;
-#include "Queue.h"
-#include "DynamicArray.h"
+
 #include<fstream>
-#include<cstdlib>
-#include<ctime>
-#include<iomanip>
-#include<cmath>
+#include<cstring>
+#include "DynamicArray.h"
+#include "Queue.h"
+using namespace std;
 
 
 struct Customer
 {
-    char id;
+    char Id;
+    string City;
+    int Budget;
     int ArrivalTime;
-    int stayLength;
+    int endTime;
+    int StayLength;
 };
 
-int getRandomNumberOfArrivals(double averageArrivalRate)
-{
-    int arrivals = 0;
-    double probOfnArrivals = exp(-averageArrivalRate);
-    for(double randomValue = (double)rand( ) / RAND_MAX; (randomValue -= probOfnArrivals) > 0.0; probOfnArrivals *= averageArrivalRate / static_cast<double>(++arrivals));
-    return arrivals;
-}
+//struct Time
+//{
+//
+//};
 
 char getLetter(char &letter)
 {
@@ -48,33 +46,47 @@ char getLetter(char &letter)
     return letter;
 }
 
-int main() {
+bool check_prefernces(const string city, const int xbudget, const DynamicArray<Customer>& searching, int classIndex)
+{
+    for(int i = 0; i < classIndex; i++)
+    {
+        if(city == searching[i].City)
+        {
+            if(xbudget >= searching[i].Budget)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+int main()
+{
 
     srand(time(0));
     rand();
     
     Queue<Customer> waitLine;
-    DynamicArray<Customer> serving;
+    DynamicArray<Customer> searching;
     DynamicArray<bool> serverStatus;
     Customer client;
 
     fstream file;
     fstream user;
+    int cust_num = 0;
     
 
     string fname, fstar, flocation, fprice, frate;
 
-    int sstar, sprice, xarrival, xstay;
-    double srate, xrate;
+    int xbudget, xstay, xarrival;
     
     char *token;
     char buf[1000];
     const char* const tab = "\t";
     
     char letter = 'Z';
-    int cust_num = 10;
-    
-    int size = 10;
+    int classIndex = 0;
     
     user.open("User.txt");
     if(!user.good())
@@ -95,26 +107,31 @@ int main() {
         const string arrival((token = strtok(0, tab)) ? token : "");
         const string stayLength((token = strtok(0, tab)) ? token : "");
         
-        client.id = getLetter(letter);
-        cout<<"Customer: "<<client.id<<endl;
+        client.Id = getLetter(letter);
+        cout<<"Customer: "<<client.Id<<endl;
         cout<<"Enter the city: \n";
         cout<<location<<endl;
         cout<<"How many stars: \n";
         cout<<star<<endl;
         cout<<"Enter the budget: \n";
         cout<<budget<<endl;
-        cout<<"The rate should be above: \n";
-        cout<<rate<<endl;
-        cout<<"How the arrival time: \n";
+        xbudget = stoi(budget);
+        
+//        cout<<"The rate should be above: \n";
+//        cout<<rate<<endl;
+        cout<<"What is the arrival time: \n";
         cout<<arrival<<" of November"<<endl;
-//        xarrival = stoi(arrival);
-//        client.ArrivalTime = xarrival;
+        
+        xarrival = stoi(arrival);
+//        time.ArrivalTime = xarrival;
+        
         cout<<"What is your stay length? \n";
         cout<<stayLength<<" days"<<endl;
-//        xstay = stoi(stayLength);
-//        client.stayLength = xstay;
+        
+        xstay = stoi(stayLength);
+//        time.stayLength = xstay;
+              
     }
-    
     
     file.open("simulation.txt");
     if(!file.good())
@@ -126,8 +143,21 @@ int main() {
         getline(file,flocation, '\n');
         getline(file,fprice, '\n');
         getline(file,frate, '\n');
+        cust_num++;
     }
 
+    for(int time = 0; ;time++)
+    {
+        for(int i = 0; i < cust_num; i++)
+        {
+            if(!serverStatus[i])
+            {
+                if(searching[i].endTime == time)
+                    serverStatus[i] = true;
+                searching[i].Id = ' ';
+            }
+        }
+    }
     return 0;
 }
 
