@@ -14,6 +14,11 @@ using namespace std;
 #include <cmath>
 
 
+struct RoomInfo
+{
+	int endDate;
+	int customerNum;
+};
 
 struct Rooms
 {
@@ -22,40 +27,47 @@ struct Rooms
 	string note;
 };
 
-struct Roomtypes
+struct RoomTypes
 {
+	string name;
 	double price;
-	int cap;
+	int  cap;
 	bool alloccupied;
 	DynamicArray<Rooms> roomList;
+	PriorityQueue<RoomInfo> roomStatus;
+	bool operator<(const RoomInfo& a, const RoomInfo& b)
+	{
+		return (a.endDate < b.endDate);
+	}
 };
 
-struct Roomstatus
-{
-	int endDate;
-	int customerNum;
-};
 
-class Hotel
+struct Hotel
 {
 	string name;
 	string city;
 	int star;
 	double rate;
-	double min_price();
-	StaticArray<Roomtypes, 5> roomtypes;
+	double min_price(int);
+	PriorityQueue<RoomTypes> roomTypes;
+	bool operator<(const RoomTypes& a, const RoomTypes& b)
+	{
+		return (a.cap > b.cap);
+	}
 };
 
-double Hotel::min_price()
+double Hotel::min_price(int num_ppl)
 {
-	return 0.2;
+	while(roomTypes.cap < num_ppl)
+		roomTypes.pop();
+	return roomTypes.top().price;
 }
 
 
 
 int main()
 {
-	PriorityQueue<Roomstatus> roomSta;
+
 
 
 
