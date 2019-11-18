@@ -1,106 +1,91 @@
-//
-//  DynamicArray.h
-//  lab_5.1
-//
-//  Created by Madina on 9/25/19.
-//  Copyright © 2019 Madina. All rights reserved.
-
 #ifndef DynamicArray_h
 #define DynamicArray_h
+
 
 template<typename T>
 class DynamicArray
 {
-    T* value;
-    int cap;
-    T dummy = T();
+	T* values;
+	T dummy = T();
+	int cap;
+
 public:
-    DynamicArray(int = 2);
-    DynamicArray(const DynamicArray<T>&);
-    ~DynamicArray(){delete [ ] value;}
-    DynamicArray<T>& operator = (const DynamicArray<T>&);
-    int capacity() const;
-    void capacity(int);
-    T operator[ ] (int) const;
-    T& operator[ ] (int);
+	DynamicArray(int = 2);
+	DynamicArray(const DynamicArray<T>&);// copy constructor
+	~DynamicArray(){ safedeleteArray(values); }
+	DynamicArray<T>& operator=(const DynamicArray<T>&);
+	int capacity() const {return cap;}
+	void capacity(int); //setter
+	const T& operator[](int) const; //getter
+	T& operator[](int); //setter
 };
 
 template<typename T>
 DynamicArray<T>::DynamicArray(int cap)
+:values(new T[cap])
+,cap(cap)
 {
-    this->cap = cap;
-    value = new T[cap];
-    
-    for(int i = 0; i < cap; i++)
-        value[i] = T();
+	for(int i = 0; i < cap; i++)
+		values[i] = T();
 }
 
 template<typename T>
 DynamicArray<T>::DynamicArray(const DynamicArray<T>& original)
+:cap(original.cap)
+,values(new T[cap])
+,dummy(original.dummy)
 {
-    cap = original.cap;
-    value = new T[cap];
-    
-    for(int i = 0; i < cap; i++)
-        value[i] = original.value[i];
-    dummy = original.dummy;
+	for(int i = 0; i < cap; i++)
+		values[i] = original.values[i];
 }
 
 template<typename T>
-DynamicArray<T>& DynamicArray<T>::operator=(const DynamicArray<T>& original)
+void DynamicArray<T>::capacity(int cap)
 {
-    if(this != &original)
-    {
-        delete [ ] value;
-        
-        cap = original.cap;
-        value = new T[cap];
-        for(int i = 0; i < cap; i++)
-            value[i] = original.value[i];
-        dummy = original.dummy;
-    }
-    return *this; //to match the data type
+	T* temp = new T[cap];
+	int limit = (cap < this->cap ? cap : this->cap);
+
+	for(int i = 0; i < limit; i++)
+		temp[i] = values[i];
+
+	for(int i = limit; i < cap; i++)
+		temp[i] = T();
+
+	delete[] values;
+	values = temp;
+	this->cap = cap;
 }
 
 template<typename T>
-int DynamicArray<T>:: capacity() const
+DynamicArray<T>& DynamicArray<T>::operator =(const DynamicArray<T>& original)
 {
-    return cap;
+	if(this == &original) { return; }
+
+	delete []values;
+	cap = original.cap;
+	values = new T[cap];
+	for (int i = 0; i < cap; i++)
+		values[i] = original.values[i];
+	dummy = original.dummy;
+
+	return *this;
 }
 
 template<typename T>
-void DynamicArray<T>:: capacity(int cap)
+const T& DynamicArray<T>::operator[](int index) const
 {
-    T* temp = new T[cap];
-    for(int i = 0; i < this->cap; i++)
-        temp[i] = value[i];
-    
-    for(int i = this->cap; i < cap; i++)
-        temp[i] = T();
-    delete [ ] value;
-    value = temp;
-    this->cap = cap; //reassign our capacity to the newly created one.
+	if(index < 0 || index >= cap) return dummy;
+	else return values[index];
 }
 
 template<typename T>
-T DynamicArray<T>::operator[](int index) const
+T& DynamicArray<T>::operator[](int index)
 {
-    if(index < 0)
-        return dummy;
-    if(index >= cap)
-        return dummy;
-    else
-        return value[index];
+	if(index < 0)
+		return dummy;
+	if(index >=cap)
+		capacity(index*2); //in case user input out of bound
+	return values[index];
 }
 
-template<typename T>
-T& DynamicArray<T>:: operator[ ] (int index)
-{
-    if(index < 0)
-        return dummy;
-    if(index >= cap)
-        capacity(index*2);
-        return value[index];
-}
-
-#endif /* DynamicArray_h */
+#endif

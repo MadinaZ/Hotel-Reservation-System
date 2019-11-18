@@ -1,10 +1,8 @@
-//  Programmer: Hiroaki Takeuchi
-//  Programmer's ID: 1718699
+#ifndef AssociativeArray_h
+#define AssociativeArray_h
 #include <queue>
 using namespace std;
 
-#ifndef AssociativeArray_h
-#define AssociativeArray_h
 
 template<typename T>
 void safeDelete(T*& p)
