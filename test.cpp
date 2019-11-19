@@ -22,6 +22,7 @@ struct RoomInfo
 
 struct Rooms
 {
+	bool reserved;
 	int startDate;
 	int userNum;
 	string note;
@@ -30,15 +31,13 @@ struct Rooms
 struct RoomTypes
 {
 	string name;
-	double price;
-	int  cap;
-	bool alloccupied;
+	double baseprice; // per night
+	double price() { return baseprice * num_rooms / roomList.size(); } //per night
+	int cap; // max ppl per room
+	int num_rooms;
 	DynamicArray<Rooms> roomList;
 	PriorityQueue<RoomInfo> roomStatus;
-	bool operator<(const RoomInfo& a, const RoomInfo& b)
-	{
-		return (a.endDate < b.endDate);
-	}
+	bool operator<(const RoomInfo& a, const RoomInfo& b) { return (a.endDate < b.endDate); }
 };
 
 
@@ -60,7 +59,7 @@ double Hotel::min_price(int num_ppl)
 {
 	while(roomTypes.cap < num_ppl)
 		roomTypes.pop();
-	return roomTypes.top().price;
+	return roomTypes.top().price();
 }
 
 
@@ -71,7 +70,8 @@ int main()
 
 
 
-
+	double a[9];
+	a = {1};
 
 
 
