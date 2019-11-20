@@ -12,18 +12,23 @@ using namespace std;
 
 struct Hotels
 {
-	string name;
-	string city;
+	char name[30];
+	char city[20];
 	int star;
 	double rate;
-	string roomytype[7];
+	char type1[7];
+	char type2[7];
+	char type3[7];
+	char type4[7];
+	char type5[7];
+	char type6[7];
+	char type7[7];
 	double baseprice[7];
 	int cap[7];
 	int num_rooms[7];
 };
 
 
-void write(ostream&, const Hotels);
 
 
 
@@ -135,27 +140,37 @@ int main()
     // for binary
 
     Hotels hotel;
-    hotel.name = name;
-    hotel.city = location;
+    strcpy(hotel.name, name.c_str());
+    strcpy(hotel.city, location.c_str());
     hotel.star = atoi(star.c_str());
     hotel.rate = atof(rate.c_str());
+    strcpy(hotel.type1,type[0].c_str());
+    strcpy(hotel.type2,type[1].c_str());
+    strcpy(hotel.type3,type[2].c_str());
+    strcpy(hotel.type4,type[3].c_str());
+    strcpy(hotel.type5,type[4].c_str());
+    strcpy(hotel.type6,type[5].c_str());
+    strcpy(hotel.type7,type[6].c_str());
+
+
+
     for(int i = 0; i < 7; i++)
     {
     	if(n == 2 && i == 6)
     	{
-      	hotel.roomytype[i] = "";
+      	//hotel.type7[0] = '';
       	hotel.baseprice[i] = 0;
       	hotel.cap[i] = 0;
       	hotel.num_rooms[i] = 0;
       	break;
     	}
-    	hotel.roomytype[i] = type[i];
     	hotel.baseprice[i] = baseprices[i];
     	hotel.cap[i] = cap[i];
     	hotel.num_rooms[i] = num_rooms[i];
     }
 
-    keepHotel.write(reinterpret_cast<char *> (&hotel), sizeof(Hotels));
+    keepHotel.seekp((line_counter - 1) * sizeof(Hotels));
+    keepHotel.write(reinterpret_cast<const char*> (&hotel), sizeof(Hotels));
 
   }
 
@@ -163,11 +178,3 @@ int main()
 }
 
 
-void write(ostream& out, const Hotels& hotel)
-{
-	out << setw(30) << hotel.name << setw(20) << hotel.city << setw(5) << hotel.star << setw(5) << hotel.rate;
-	for(int i = 0; i < 7; i++)
-		out << setw(13) << hotel.roomytype[i] << setw(9) << setprecision(2) << hotel.baseprice[i] << setw(4) << hotel.cap[i] << setw(5) << hotel.num_rooms[i];
-
-	out << endl;
-}
