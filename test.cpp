@@ -70,8 +70,7 @@ int main()
 
 
 
-	double a[9];
-	a = {1};
+  AssociativeArray<string, Hotel> hotels;
 
 
 
