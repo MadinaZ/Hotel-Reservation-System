@@ -57,6 +57,10 @@ int main()
     Queue<Hotel> hotel;
     DynamicArray<Customer> searching;
     DynamicArray<bool> serverStatus;
+    Queue<Hotel> copy_hotel;
+    Queue<Hotel> reserve;
+    
+
 
     Customer client;
     Hotel h;
@@ -152,27 +156,49 @@ int main()
             h.star = fstar;
             h.location = flocation;
             hotel.push(h);
-
-            Queue<Hotel> copy_hotel = hotel;
-            if(waitLine.front().City == flocation)
-            {
-                if(waitLine.front().Budget >= con_fprice && waitLine.front().Star == fstar)
+                        
+            copy_hotel = hotel;
+            reserve = hotel;
+                if(waitLine.front().City == h.location)
                 {
-                    cout<<"Available options in "<<waitLine.front().City<<" are: "<<endl;
-                    cout<<copy_hotel.front().name<<endl<<endl;
-                    copy_hotel.pop();
+                    
+                    if(waitLine.front().Budget >= h.price && waitLine.front().Star == h.star)
+                    {
+                        cout<<"Available options in "<<waitLine.front().City<<" are: "<<endl;
+                        cout<<copy_hotel.front().name<<endl<<endl;
+                        
+                    }
                 }
-            }
-            waitLine.pop();
+                else
+                    continue;
+                copy_hotel.pop();
+
             
-//            cout<<"Enter your choice \n";
+        }//end of the hotel loop
+        
+        cout<<"Enter your choice \n";
+        string input;
+        cin>>input;
+
+        if(input == reserve.front().name) //reserve
+        {
+            for(int i = waitLine.front().ArrivalTime; i != waitLine.front().endTime; i++)
+            {
+                serverStatus[i] = true;
+            }
+            cout<<"Succesfully booked \n";
         }
+        else
+            cout<<"Sorry, your booking is unavailable \n";
+            
+        reserve.pop();
 
         file.close();
-    }
+
+    }//end of the user loop
+    waitLine.pop();
 
     return 0;
 }
-
 
 
