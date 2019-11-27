@@ -1,21 +1,5 @@
-//
-//  main.cpp
-//  FINAL_PROJECT
-//
-//  Created by Madina Sadirmekova on 11/8/19.
-//  Copyright © 2019 Madina Sadirmekova. All rights reserved.
-// Plan:
-//   1)we are going to get user preference
-//   2)based on that do sorting
-//   3)display the options
-//   4)optinons are based on index, we let the user choose the index, thus reserve it
-//   5)I thought it will be better to let the reservation be only for two weeks with 10 customers
-//       But entering 10 people's data seems time consuming, so probaly will randomly generate their choices.
-//       Or I will creat different text file with already exisitng data
-
 #include <iostream>
 #include<string>
-
 #include<fstream>
 #include<cstring>
 #include "DynamicArray.h"
@@ -27,16 +11,20 @@ struct Customer
 {
     char Id;
     string City;
+    string Star;
     int Budget;
     int ArrivalTime;
     int endTime;
-    int StayLength;
 };
 
-//struct Time
-//{
-//
-//};
+struct Hotel
+{
+    string location;
+    int price;
+    string star;
+    string rate;
+    string name;
+};
 
 char getLetter(char &letter)
 {
@@ -46,16 +34,17 @@ char getLetter(char &letter)
     return letter;
 }
 
-bool check_prefernces(const string city, const int xbudget, const DynamicArray<Customer>& searching, int classIndex)
+bool check_prefernces(const string city, const DynamicArray<Customer>& searching, int classIndex)
 {
     for(int i = 0; i < classIndex; i++)
     {
         if(city == searching[i].City)
         {
-            if(xbudget >= searching[i].Budget)
-            {
-                return true;
-            }
+            return true;
+            // if(xbudget >= searching[i].Budget)
+            // {
+            //     return true;
+            // }
         }
     }
     return false;
@@ -64,100 +53,126 @@ bool check_prefernces(const string city, const int xbudget, const DynamicArray<C
 int main()
 {
 
-    srand(time(0));
-    rand();
-    
     Queue<Customer> waitLine;
+    Queue<Hotel> hotel;
     DynamicArray<Customer> searching;
     DynamicArray<bool> serverStatus;
-    Customer client;
 
+    Customer client;
+    Hotel h;
     fstream file;
     fstream user;
     int cust_num = 0;
-    
 
-    string fname, fstar, flocation, fprice, frate;
+
+    //    string fname, fstar, flocation, fprice, frate;
 
     int xbudget, xstay, xarrival;
-    
+
     char *token;
     char buf[1000];
+    int count;
     const char* const tab = "\t";
-    
+
     char letter = 'Z';
     int classIndex = 0;
-    
+
     user.open("User.txt");
     if(!user.good())
-         cout<<"I/O error \n";
+        cout<<"I/O error \n";
     while(user.good())
     {
         string line;
         getline(user, line);
         strcpy(buf, line.c_str());
-        
+
         if(buf[0] == 0)//empty string
-                   continue;
-        
+            continue;
+
         const string location (token = strtok(buf, tab));
         const string star((token = strtok(0, tab)) ? token : "");
         const string budget((token = strtok(0, tab)) ? token : "");
         const string rate((token = strtok(0, tab)) ? token : "");
         const string arrival((token = strtok(0, tab)) ? token : "");
         const string stayLength((token = strtok(0, tab)) ? token : "");
-        
+
         client.Id = getLetter(letter);
         cout<<"Customer: "<<client.Id<<endl;
         cout<<"Enter the city: \n";
         cout<<location<<endl;
+        client.City = location;
         cout<<"How many stars: \n";
         cout<<star<<endl;
+        client.Star = star;
         cout<<"Enter the budget: \n";
         cout<<budget<<endl;
         xbudget = stoi(budget);
-        
-//        cout<<"The rate should be above: \n";
-//        cout<<rate<<endl;
+        client.Budget = xbudget;
+        //        cout<<"The rate should be above: \n";
+        //        cout<<rate<<endl;
         cout<<"What is the arrival time: \n";
         cout<<arrival<<" of November"<<endl;
-        
+
         xarrival = stoi(arrival);
-//        time.ArrivalTime = xarrival;
-        
-        cout<<"What is your stay length? \n";
-        cout<<stayLength<<" days"<<endl;
-        
+        client.ArrivalTime = xarrival;
+
+        cout<<"Check out date? \n";
+        cout<<stayLength<<" of November"<<endl;
+
         xstay = stoi(stayLength);
-//        time.stayLength = xstay;
-              
-    }
-    
-    file.open("simulation.txt");
-    if(!file.good())
-        cout<<"I/O error \n";
-    while(file.good())
-    {
-        getline(file,fname, '\n');
-        getline(file,fstar, '\n');
-        getline(file,flocation, '\n');
-        getline(file,fprice, '\n');
-        getline(file,frate, '\n');
-        cust_num++;
+        client.endTime = xstay;
+        waitLine.push(client);
+        cout<<endl;
+//        user.close();
+        //--------------
+        file.open("Hotel.txt");
+        if(!file.good())
+            cout<<"I/O error \n";
+
+        while(file.good())
+        {
+            string line;
+            getline(file,line);
+            count++;
+            strcpy(buf, line.c_str());
+
+
+            if(buf[0] == 0)//empty string
+                continue;
+            const string fname (token = strtok(buf, tab));
+            const string fstar((token = strtok(0, tab)) ? token : "");
+            const string flocation((token = strtok(0, tab)) ? token : "");
+            const string fprice((token = strtok(0, tab)) ? token : "");
+            const string frate((token = strtok(0, tab)) ? token : "");
+            int con_fprice = stoi(fprice);
+
+            h.name = fname;
+            h.price = con_fprice;
+            h.rate = frate;
+            h.star = fstar;
+            h.location = flocation;
+            hotel.push(h);
+
+            Queue<Hotel> copy_hotel = hotel;
+            if(waitLine.front().City == flocation)
+            {
+                if(waitLine.front().Budget >= con_fprice && waitLine.front().Star == fstar)
+                {
+                    cout<<"Available options in "<<waitLine.front().City<<" are: "<<endl;
+                    cout<<copy_hotel.front().name<<endl<<endl;
+                    copy_hotel.pop();
+                }
+            }
+            waitLine.pop();
+            
+//            cout<<"Enter your choice \n";
+        }
+
+        file.close();
     }
 
-    for(int time = 0; ;time++)
-    {
-        for(int i = 0; i < cust_num; i++)
-        {
-            if(!serverStatus[i])
-            {
-                if(searching[i].endTime == time)
-                    serverStatus[i] = true;
-                searching[i].Id = ' ';
-            }
-        }
-    }
     return 0;
 }
+
+
 
