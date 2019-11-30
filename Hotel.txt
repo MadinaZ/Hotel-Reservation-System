@@ -1,0 +1,10 @@
+Union	4	San-Francisco	135	4.2
+Hilton	4	San-Francisco	95	4.3
+Marriott	4	San-Francisco	169	4.4
+Intercontinental	4	San-Francisco	144	4.4
+Hyatt	5	San-Francisco	179	4.5
+Lexington	4	New-York	200	4.1
+Plaza	5	New-York	830	4.5
+Four-Seasons	4	New-York	1495	4.6
+Ritz-Carlton	5	New-York	835	4.6
+WestHouse	5	New-York	275	4.2
