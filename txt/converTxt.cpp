@@ -1,3 +1,5 @@
+#include "Hotels.h"
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -7,42 +9,6 @@ using namespace std;
 
 #include <cstring>
 #include <ctime>
-
-
-
-struct Hotels
-{
-	char name[30];
-	char city[20];
-	int star;
-	double rate;
-	char type1[10];
-	char type2[10];
-	char type3[10];
-	char type4[10];
-	char type5[10];
-	char type6[10];
-	char type7[10];
-	double baseprice[7];
-	int cap[7];
-	int num_rooms[7];
-
-	Hotels();
-};
-
-Hotels::Hotels()
-:name("")
-,city("")
-,star(0)
-,rate(0)
-,type1("")
-,type2("")
-,type3("")
-,type4("")
-,type5("")
-,type6("")
-,type7("")
-{}
 
 
 
@@ -90,7 +56,7 @@ int main()
   int line_counter = 0;
   Hotels hotel;
 
-  while(line_counter < 10)//fin.good())
+  while(fin.good())
   {
   	string line;
   	getline(fin, line);
@@ -106,7 +72,7 @@ int main()
 
 
 
-    int n = 1;//  rand()%2 + 1; // for case 1 or 2 random room info
+    int n = rand()%2 + 1; // for case 1 or 2 random room info
     string type[7]; // room types
     double baseprices[7];
     int cap[7], num_rooms[7]; // cap = num of people can stay in a room.
@@ -160,6 +126,7 @@ int main()
 
 
     // for binary
+    cout << hotel.name;
     strcpy(hotel.name, name.c_str());
     strcpy(hotel.city, location.c_str());
     hotel.star = atoi(star.c_str());
@@ -198,11 +165,10 @@ int main()
 	Hotels hotels;
 	inHotel.read(reinterpret_cast <char*>(&hotels), sizeof(Hotels));
 
-	cout << hotels.name;
 
 	while(!inHotel.eof() && inHotel)
 	{
-		cout << hotels.star << endl;
+		cout << hotels.star << hotels.rate << hotels.name << hotels.baseprice[0] << hotels.type6 << endl;
 
 		inHotel.read(reinterpret_cast<char*>(&hotels), sizeof(Hotels));
 		counter++;
@@ -211,7 +177,7 @@ int main()
 	cout<< counter;
 
 
-
+	inHotel.close();
 	outHotel.close();
 	outxtHote.close();
 	copyHotel.close();
