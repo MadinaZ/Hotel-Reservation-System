@@ -44,17 +44,17 @@ int main()
 	int counter =0;
 	Hotels hotel;
   readHotel.seekg(0);
-	readHotel.read(reinterpret_cast <char*>(&hotel), sizeof(Hotels));
+  readHotel.read(reinterpret_cast <char*>(&hotel), sizeof(Hotels));
 
-	cout << hotel.name;
+  cout << hotel.name;
 
-	while(!readHotel.eof() && readHotel)
-	{
+  while(!readHotel.eof() && readHotel)
+  {
     cout << hotel.name<< hotel.star << endl;
 
-		readHotel.read(reinterpret_cast<char*>(&hotel), sizeof(Hotels));
-		counter++;
-	}
+    readHotel.read(reinterpret_cast<char*>(&hotel), sizeof(Hotels));
+    counter++;
+  }
 
 	cout<< counter;
 
