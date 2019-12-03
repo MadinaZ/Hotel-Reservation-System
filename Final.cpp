@@ -7,12 +7,7 @@ using namespace std;
 
 #include "DynamicArray.h"
 #include "Queue.h"
-//#include "AssociativeArray.h"
-
-struct Book
-{
-    DynamicArray<bool> status;
-};
+#include "AssociativeArray.h"
 
 struct Customer
 {
@@ -32,6 +27,8 @@ struct Hotel
     string star;
     string rate;
     string name;
+    //bool status[14];
+    DynamicArray<bool> status;
 };
 
 char getLetter(char &letter)
@@ -42,7 +39,7 @@ char getLetter(char &letter)
     return letter;
 }
 
-bool boolreserve1(string input,const DynamicArray<Hotel>& hotel, const Queue<Customer>& waitLine)
+bool boolreserve1(string input, DynamicArray<Hotel>& hotel, Queue<Customer>& waitLine)
 {
     for(int i = 0; i < hotel.capacity(); i++)
     {
@@ -52,7 +49,7 @@ bool boolreserve1(string input,const DynamicArray<Hotel>& hotel, const Queue<Cus
     return false;
 }
 
-int reserve1(string input,const DynamicArray<Hotel>& hotel, const Queue<Customer>& waitLine)
+int reserve1(string input,DynamicArray<Hotel>& hotel, Queue<Customer>& waitLine)
 {
     for(int i = 0; i < hotel.capacity(); i++)
     {
@@ -62,16 +59,16 @@ int reserve1(string input,const DynamicArray<Hotel>& hotel, const Queue<Customer
     return 0;
 }
 
-int reserve2(const Queue<Customer>& waitLine, const DynamicArray<Book>& serverStatus, int index)
+int reserve2(Queue<Customer>& waitLine, DynamicArray<Hotel>& hotel, int index2)
 {
     int calc = 0;
-
-    for(int i = waitLine.front().ArrivalTime; i != waitLine.front().endTime; i++)
+//    cout<<waitLine.front().ArrivalTime<<"---"<<waitLine.front().endTime<<endl;
+    for(int i = waitLine.front().ArrivalTime; i <= waitLine.front().endTime; i++)
     {
-        if(serverStatus[index].status[i])
+        if(hotel[index2].status[i])//pomenyala
             calc++;
     }
-    int result = waitLine.front().endTime - waitLine.front().ArrivalTime;
+    int result = waitLine.front().endTime - waitLine.front().ArrivalTime + 1;
 //    cout<<"calc is: "<<calc<<"result: "<<result<<endl;
     if(calc == result)
         return 1;
@@ -79,15 +76,30 @@ int reserve2(const Queue<Customer>& waitLine, const DynamicArray<Book>& serverSt
     return 0;
 }
 
-void reserve3(DynamicArray<Book>& serverStatus, Queue<Customer>& waitLine, int index)
+void reserve3(DynamicArray<Hotel>& hotel, Queue<Customer>& waitLine, int index2)
 {
-    for(int j = waitLine.front().ArrivalTime; j != waitLine.front().endTime; j++)
+    for(int j = waitLine.front().ArrivalTime; j <= waitLine.front().endTime; j++)
     {
-        if(serverStatus[index].status[j] == false)
-            serverStatus[index].status[j] = true;
+        if(hotel[index2].status[j] == false)//POM
+            hotel[index2].status[j] = true;//POM
         else
             break;
     }
+}
+
+bool reserve4(DynamicArray<Hotel>& hotel, Queue<Customer>& waitLine, int index)
+{
+    int calc = 0;
+    for(int j = waitLine.front().ArrivalTime; j <= waitLine.front().endTime; j++)
+    {
+        if(!hotel[index].status[j])//POM
+            calc++;
+    }
+    int result = waitLine.front().endTime - waitLine.front().ArrivalTime + 1;
+    if(calc == result)
+        return true;
+
+    return false;
 }
 
 bool check_city(int index, const DynamicArray<Hotel>& hotel, const Queue<Customer> waitLine)
@@ -100,21 +112,20 @@ bool check_city(int index, const DynamicArray<Hotel>& hotel, const Queue<Custome
     return false;
 }
 
-void display(int index, const DynamicArray<Hotel>& hotel, const Queue<Customer> waitLine)
-{
-    for(int i = 0; i < index; i++)
-    {
-        if(waitLine.front().Budget >= hotel[i].price && waitLine.front().Star == hotel[i].star)
-        {
-            cout<<hotel[i].name<<endl<<endl;
-        }
-    }
-}
+//void display(int index, const DynamicArray<Hotel>& hotel, const Queue<Customer> waitLine)
+//{
+//    for(int i = 0; i < index; i++)
+//    {
+//        if(waitLine.front().Budget >= hotel[i].price && waitLine.front().Star == hotel[i].star)
+//        {
+//            if(reserve4(hotel, waitLine, index))
+//                cout<<hotel[i].name<<endl<<endl;
+//        }
+//    }
+//}
 
 int main()
 {
-    DynamicArray<Book> serverStatus;
-
     Queue<Customer> waitLine;
     DynamicArray<Hotel> hotel;
     DynamicArray<Customer> customer;
@@ -174,83 +185,113 @@ int main()
         cout<<endl;
         //        user.close();
     }//end of the user loop
-    //--------------
+    //---------------------
     file.open("Hotel.txt");
     if(!file.good())
         cout<<"I/O error \n";
     
+    string str;
+    cout<<"If you would like to use a search bar press 1 \n";
+    cout<<"If you would like us to reserve a hotel based on your preferences press 2 \n";
+    cin>>str;
     
-    while(file.good())//hotel
+    if(str[0] == '2')
     {
-        string line;
-        getline(file,line);
-        strcpy(buf, line.c_str());
         
-        
-        if(buf[0] == 0)//empty string
-            continue;
-        const string fname (token = strtok(buf, tab));
-        const string fstar((token = strtok(0, tab)) ? token : "");
-        const string flocation((token = strtok(0, tab)) ? token : "");
-        const string fprice((token = strtok(0, tab)) ? token : "");
-        const string frate((token = strtok(0, tab)) ? token : "");
-        int con_fprice = stoi(fprice);
-        
-        hotel[index].name = fname;
-        hotel[index].price = con_fprice;
-        hotel[index].rate = frate;
-        hotel[index].star = fstar;
-        hotel[index].location = flocation;
-        index++;
-    }
-
-    while(!waitLine.empty())//user
-    {
-        cout<<"Customer: "<<waitLine.front().Id<<endl;
-        cout<<"Enter the city: \n";
-        cout<<waitLine.front().City<<endl;
-        cout<<"How many stars: \n";
-        cout<<waitLine.front().Star<<endl;
-        cout<<"Enter the budget: \n";
-        cout<<waitLine.front().Budget<<endl;
-        //        cout<<"The rate should be above: \n";
-        //        cout<<rate<<endl;
-        
-        cout<<"What is the arrival time: \n";
-        cout<<waitLine.front().ArrivalTime<<" of November"<<endl;
-        cout<<"Check out date? \n";
-        cout<<waitLine.front().endTime<<" of November"<<endl;
-        
-        if(check_city(index, hotel, waitLine) == true)
+        while(file.good())//hotel
         {
-            cout<<"Available options in "<<waitLine.front().City<<" are: "<<endl;
-            display(index, hotel, waitLine);
-            cout<<"Enter your choice \n";
-            string input;
-            cin>>input;
+            string line;
+            getline(file,line);
+            strcpy(buf, line.c_str());
             
-            if(boolreserve1(input,hotel,waitLine) == true)
-            {
-                int index = reserve1(input, hotel, waitLine);
-                reserve3(serverStatus, waitLine, index);
-                int result = reserve2(waitLine,serverStatus, index);
-                
-                
-                if(result == 1)
-                    cout<<endl<<"Succesfully booked \n";
-                else if (result == 0)
-                    cout<<"\n Sorry, your booking is unavailable \n";
-            }
             
+            if(buf[0] == 0)//empty string
+                continue;
+            const string fname (token = strtok(buf, tab));
+            const string fstar((token = strtok(0, tab)) ? token : "");
+            const string flocation((token = strtok(0, tab)) ? token : "");
+            const string fprice((token = strtok(0, tab)) ? token : "");
+            const string frate((token = strtok(0, tab)) ? token : "");
+            int con_fprice = stoi(fprice);
+            
+            hotel[index].name = fname;
+            hotel[index].price = con_fprice;
+            hotel[index].rate = frate;
+            hotel[index].star = fstar;
+            hotel[index].location = flocation;
+            index++;
         }
-        else
-            cout<<endl<<"Nothing found"<<endl<<endl;
         
-        waitLine.pop();
+        string Ucity,Ustar, Ubudget, UarrTime, UendTime;
+        cout<<"Enter the city: \n";
+        cin>>Ucity;
+        cout<<"How many stars: \n";
+        cin>>Ustar;
+        cout<<"Enter the budget: \n";
+        cin>>Ubudget;
+        cout<<"What is the arrival time: \n";
+        cin>>UarrTime;
+        cout<<"Check out date? \n";
+        cin>>UendTime;
+        user<<Ucity<<tab<<Ustar<<tab<<Ubudget<<tab<<UarrTime<<tab<<UendTime<<"\n";
+        
+        while(!waitLine.empty())//user
+        {
+            cout<<"Customer: "<<waitLine.front().Id<<endl;
+            cout<<"Enter the city: \n";
+            cout<<waitLine.front().City<<endl;
+            cout<<"How many stars: \n";
+            cout<<waitLine.front().Star<<endl;
+            cout<<"Enter the budget: \n";
+            cout<<waitLine.front().Budget<<endl;
+            //        cout<<"The rate should be above: \n";
+            //        cout<<rate<<endl;
+            
+            cout<<"What is the arrival time: \n";
+            cout<<waitLine.front().ArrivalTime<<" of November"<<endl;
+            cout<<"Check out date? \n";
+            cout<<waitLine.front().endTime<<" of November"<<endl;
+            
+            if(check_city(index, hotel, waitLine) == true)
+            {
+                cout<<"Available options in "<<waitLine.front().City<<" are: "<<endl;
+                //                display(index, hotel, waitLine);
+                for(int i = 0; i < index; i++)
+                {
+                    if(waitLine.front().Budget >= hotel[i].price && waitLine.front().Star == hotel[i].star)
+                    {
+                        if(reserve4(hotel, waitLine, index))
+                            cout<<hotel[i].name<<endl<<endl;
+                    }
+                }
+                cout<<"Enter your choice \n";
+                string input;
+                cin>>input;
+                
+                if(boolreserve1(input,hotel,waitLine) == true)
+                {
+                    int index2 = reserve1(input, hotel, waitLine);
+                    reserve3(hotel, waitLine, index2);
+                    int result = reserve4(hotel, waitLine, index2);
+                    
+                    
+                    if(result == 1)
+                        cout<<endl<<"Succesfully booked \n";
+                    else if (result == 0)
+                        cout<<"\n Sorry, your booking is unavailable \n";
+                }
+                
+            }
+            else
+                cout<<endl<<"Nothing found"<<endl<<endl;
+            
+            waitLine.pop();
+        }
+        
     }
-    
-    
     file.close();
     return 0;
 }
+
+
 
