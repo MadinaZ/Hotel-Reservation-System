@@ -68,7 +68,7 @@ void DynamicArray<T>::capacity(int cap)
 template<typename T>
 DynamicArray<T>& DynamicArray<T>::operator=(const DynamicArray<T>& original)
 {
-	if(this == &original) { return; }
+	if(this == &original) { return *this; }
 
 	delete []values;
 	cap = original.cap;
