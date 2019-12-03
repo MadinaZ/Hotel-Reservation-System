@@ -16,19 +16,33 @@ struct Hotels
 	char city[20];
 	int star;
 	double rate;
-	char type1[7];
-	char type2[7];
-	char type3[7];
-	char type4[7];
-	char type5[7];
-	char type6[7];
-	char type7[7];
+	char type1[10];
+	char type2[10];
+	char type3[10];
+	char type4[10];
+	char type5[10];
+	char type6[10];
+	char type7[10];
 	double baseprice[7];
 	int cap[7];
 	int num_rooms[7];
+
+	Hotels();
 };
 
-
+Hotels::Hotels()
+:name("")
+,city("")
+,star(0)
+,rate(0)
+,type1("")
+,type2("")
+,type3("")
+,type4("")
+,type5("")
+,type6("")
+,type7("")
+{}
 
 
 
@@ -39,23 +53,17 @@ int main()
 	ifstream fin;
 	fin.open("Hotel.txt");
 
-	ofstream keepHotel("newHotel.dat", ios::out | ios::binary);
-	ifstream readHotel("newHotel.dat", ios::in | ios::binary);
-	ofstream outHotel("newHotel.txt");
+	ofstream outHotel("newHotel.dat", ios::out | ios::binary);
+	ifstream inHotel("newHotel.dat", ios::in | ios::binary);
+	ofstream outxtHote;
+	ofstream copyHotel;
+
+	outxtHote.open("newHotel.txt");
+	copyHotel.open("copydatHotel.txt");
 
 	if(!fin)
 	{
 		cerr << "fin error";
-		exit(EXIT_FAILURE);
-	}
-	if(!keepHotel)
-	{
-		cerr << "keepHotel error";
-		exit(EXIT_FAILURE);
-	}
-	if(!readHotel)
-	{
-		cerr << "keepHotel error";
 		exit(EXIT_FAILURE);
 	}
 	if(!outHotel)
@@ -63,14 +71,26 @@ int main()
 		cerr << "outHotel error";
 		exit(EXIT_FAILURE);
 	}
+	if(!outxtHote)
+	{
+		cerr << "outxtHote error";
+		exit(EXIT_FAILURE);
+	}
+	if(!copyHotel)
+	{
+		cerr << "copyHotel error";
+		exit(EXIT_FAILURE);
+	}
+
 
 
   char *token;
   char buf[1000];
   const char* const tab = "\t";
   int line_counter = 0;
+  Hotels hotel;
 
-  while(fin.good())
+  while(line_counter < 10)//fin.good())
   {
   	string line;
   	getline(fin, line);
@@ -86,10 +106,13 @@ int main()
 
 
 
-    int n = rand()%2 + 1;
-    string type[7];
+    int n = 1;//  rand()%2 + 1; // for case 1 or 2 random room info
+    string type[7]; // room types
     double baseprices[7];
-    int cap[7], num_rooms[7];
+    int cap[7], num_rooms[7]; // cap = num of people can stay in a room.
+    													// num_rooms = num of rooms for each room type
+    			// index matches corresponding with room types.
+
 
     // hotel price = baseprice * RevPAR
 
@@ -116,30 +139,27 @@ int main()
     }
 
 
-    outHotel.setf(ios::left);
-    outHotel << fixed;
-    cout << name << endl;
+    outxtHote.setf(ios::left);
+    outxtHote << fixed;
+
     int n_max = (n == 1 ? 7:6);
-    outHotel << setw(30) << name << setw(20) << location << setw(5) << star << setw(5) << rate;
+    outxtHote << setw(30) << name << setw(20) << location << setw(5) << star << setw(5) << rate;
 
     if(line_counter == 0)
-    	outHotel << setw(13) << "Roomtype" << setw(9) << "baseprice" << setw(4) << "cap" << setw(5) << "num_rooms" << endl;
+    	outxtHote << setw(13) << "Roomtype" << setw(9) << "baseprice" << setw(4) << "cap" << setw(5) << "num_rooms" << endl;
     else
     {
     	for(int i = 0; i < n_max; i++)
     	{
-    		outHotel << setw(13) << type[i] << setw(9) << setprecision(2) << baseprices[i] << setw(4) << cap[i] << setw(5) << num_rooms[i];
+    		outxtHote << setw(13) << type[i] << setw(9) << setprecision(2) << baseprices[i] << setw(4) << cap[i] << setw(5) << num_rooms[i];
     	}
     }
-    outHotel << endl;
+    outxtHote << endl;
 
     ++line_counter;
 
 
-
     // for binary
-
-    Hotels hotel;
     strcpy(hotel.name, name.c_str());
     strcpy(hotel.city, location.c_str());
     hotel.star = atoi(star.c_str());
@@ -151,8 +171,6 @@ int main()
     strcpy(hotel.type5,type[4].c_str());
     strcpy(hotel.type6,type[5].c_str());
     strcpy(hotel.type7,type[6].c_str());
-
-
 
     for(int i = 0; i < 7; i++)
     {
@@ -169,11 +187,34 @@ int main()
     	hotel.num_rooms[i] = num_rooms[i];
     }
 
-    keepHotel.seekp((line_counter - 1) * sizeof(Hotels));
-    keepHotel.write(reinterpret_cast<const char*> (&hotel), sizeof(Hotels));
+    outHotel.seekp((line_counter - 1) * sizeof(Hotels));
+    outHotel.write(reinterpret_cast<const char*> (&hotel), sizeof(Hotels));
 
   }
 
+
+
+	int counter =0;
+	Hotels hotels;
+	inHotel.read(reinterpret_cast <char*>(&hotels), sizeof(Hotels));
+
+	cout << hotels.name;
+
+	while(!inHotel.eof() && inHotel)
+	{
+		cout << hotels.star << endl;
+
+		inHotel.read(reinterpret_cast<char*>(&hotels), sizeof(Hotels));
+		counter++;
+
+	}
+	cout<< counter;
+
+
+
+	outHotel.close();
+	outxtHote.close();
+	copyHotel.close();
   return 0;
 }
 
