@@ -5,8 +5,10 @@
 #include "PriorityQueue.h"
 
 
+
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 #include <string>
 #include <cstdlib>
 using namespace std;
@@ -72,9 +74,19 @@ int main()
 
   AssociativeArray<string, Hotel> hotels;
 
+  ifstream fin;
+  fin.open("newHotel.txt");
 
 
+	if(!fin)
+	{
+		cerr << "fin error";
+		exit(EXIT_FAILURE);
+	}
 
+	string buf;
+
+	fin >> buf; cout << buf;
 
 
 
