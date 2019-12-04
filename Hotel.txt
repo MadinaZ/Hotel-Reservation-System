@@ -1,0 +1,27 @@
+Name				Star		Location 		Price(from)	Rate
+
+Hilton Union Square		4		San Francisco		135$		4.2
+Hilton Financial District	4		San Francisco 		95$		4.3
+Marriott Marquis 		4		San Francisco		169$		4.4
+Intercontinental		4		San Francisco		144$		4.4
+Hyatt Regency			5		San Francisco		179$		4.5
+The Lexington Hotel		4		New York		200$		4.1
+The Plaza			5		New York		830$		4.5
+Four Seasons			4		New York		1495$		4.6
+The Ritz-Carlton		5		New York		835$		4.6
+WestHouse Hotel			5		New York		275$		4.2
+Mayflower Hotel			3		London			56$		3.5
+Rochester Hotel			4		London			101$		3.9
+Eden Plaza Kensington		3		London			64$		3.7
+Marble Arch London		5		London			147$		4.1
+Radisson Blu Edwardian		5		London			268$		4.4
+Ambassade Hotel			4		Amsterdam		151$		4.8
+Morgan and Mees			3		Amsterdam		191$		4.4
+Cocomama			2		Amsterdam		45$		4.5
+Hostelle			2		Amsterdam		42$		4.6
+The Dylan			5		Amsterdam		364$		4.7
+Ashanti Lodge Gardens		2		Cape Town		21$		4.2
+Mont Angelis			3		Cape Town		77$		4.7
+Zevenwacht			4		Cape Town		121$		4.4
+Tintswalo Atlantic		5		Cape Town		427$		4.8
+Colona Castle			5		Cape Town		182$		4.8
