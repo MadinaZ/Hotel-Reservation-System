@@ -1,6 +1,13 @@
 #ifndef DynamicArray_h
 #define DynamicArray_h
-
+/*
+template<typename T>
+void safedeleteArray(T*& p)
+{
+  delete [] p;
+  p = 0;
+}
+*/
 
 template<typename T>
 class DynamicArray
@@ -59,7 +66,7 @@ void DynamicArray<T>::capacity(int cap)
 		temp[i] = T();
 
 	int size = siz;
-	safeDeleteArray(values);
+	safedeleteArray(values);
 	values = temp;
 	this->cap = cap;
 	this->siz = size;
@@ -68,7 +75,7 @@ void DynamicArray<T>::capacity(int cap)
 template<typename T>
 DynamicArray<T>& DynamicArray<T>::operator=(const DynamicArray<T>& original)
 {
-	if(this == &original) { return; }
+	if(this == &original) { return *this; }
 
 	delete []values;
 	cap = original.cap;
