@@ -23,7 +23,7 @@ class PriorityQueue
 	void capacity(int);
 
 public:
-	PriorityQueue(int = 100);
+	PriorityQueue(int =2);
 	PriorityQueue(const PriorityQueue<V>&);
 	~PriorityQueue() { safedeleteArray(values); }
 	PriorityQueue<V>& operator=(const PriorityQueue<V>&);

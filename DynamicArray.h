@@ -41,9 +41,9 @@ DynamicArray<T>::DynamicArray(int cap)
 
 template<typename T>
 DynamicArray<T>::DynamicArray(const DynamicArray<T>& original)
-:cap(original.cap)
-,values(new T[cap])
+:values(new T[original.cap])
 ,dummy(original.dummy)
+,cap(original.cap)
 ,siz(0)
 {
 	for(int i = 0; i < cap; i++)
@@ -77,7 +77,7 @@ DynamicArray<T>& DynamicArray<T>::operator=(const DynamicArray<T>& original)
 {
 	if(this == &original) { return *this; }
 
-	delete []values;
+	safedeleteArray(values);
 	cap = original.cap;
 	values = new T[cap];
 	for (int i = 0; i < cap; i++)
