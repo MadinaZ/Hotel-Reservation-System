@@ -23,7 +23,6 @@ using namespace std;
 
 
 
-
 struct Rooms
 {
   int room_num;
@@ -120,6 +119,10 @@ double Hotel::min_price(int num_ppl)
 
 
 
+
+void reserve();
+
+
 int main()
 {
 
@@ -191,9 +194,17 @@ int main()
 //  cout << hotels["San Francisco"].top();
  // hotels["San Francisco"].pop();
  // cout << hotels["San Francisco"].top().name_h;
-  cout<<hotels["San Francisco"].size();
+
   list<Hotel>::iterator it;
-  for(it = hotels["New York"].begin(); it != hotels["New York"].end(); it++)
+  for(it = hotels["London"].begin(); it != hotels["London"].end(); it++)
+  	cout << it->name_h << endl;
+
+
+  BinarySearchTree<string, list<Hotel> > copyHotel;
+  copyHotel = hotels;
+
+
+  for(it = copyHotel["London"].begin(); it != copyHotel["London"].end(); it++)
   	cout << it->name_h << endl;
 
 
@@ -209,43 +220,86 @@ int main()
     getline(cin, city);
   }
 
-  cout << "How many people? " << endl;
-  getline(cin, buf);
-  num_p = atoi(buf.c_str());
-  while(num_p == 0)
+
+  while(true)
   {
-  	cout << "need to be more than 0" << endl;
-  	cout << "How many people? " << endl;
-    getline(cin, buf);
-    num_p = atoi(buf.c_str());
+		cout << "How many people? " << endl;
+		cin >> buf;
+		num_p = atoi(buf.c_str());
+		while(num_p == 0)
+		{
+			cout << "need to be more than 0" << endl;
+			cout << "How many people? " << endl;
+			cin >> buf;
+			num_p = atoi(buf.c_str());
+		}
+		set<pair<double,string> > sortprice;
+		//look for the cheapest price in the user condition
+		for(it = copyHotel[city].begin(); it != copyHotel[city].end(); it++)
+		{
+			while(it->roomTypes.top().baseprice == 0) // remove 0 dollar hotel roomtypes
+				it->roomTypes.pop();
+			while(it->roomTypes.top().cap >= num_p) // pop roomytypes with a cap less than user input
+				it->roomTypes.pop();
+
+
+
+			pair<double,string> temp;
+			temp.first = it->roomTypes.top().baseprice;
+			temp.second = it->name_h;
+			sortprice.insert(temp);
+		}
+		cout << "The cheapest hotel in " << city << "\n\t" << sortprice.begin()->second << " from $"
+				 << fixed << setprecision(2) << sortprice.begin()->first << endl << endl;
+
+
+		cout << "Wanna reserve this hotel? (Y/N) ";
+		cin >> buf;
+		cout << endl;
+		if(buf[0] == 'y' || buf[0] == 'Y') reserve();
+		else
+		{
+			cout << "Wanna see the list of the hotels in " << city << " ? (Y/N) ";
+			cin >> buf;
+			if(buf[0] == 'y' || buf[0] == 'Y')
+			{
+
+			}
+			else
+			{
+				cout << "Serach hotel again? (Y/N) ";
+				cin >> buf;
+				if(buf[0] == 'y' || buf[0] == 'Y')
+					continue;
+				else
+					break;
+
+			}
+		}
+
   }
- 	set<pair<double,string> > sortprice;
-  //look for the cheapest price in the user condition
-  for(it = hotels[city].begin(); it != hotels[city].end(); it++)
-  {
-  	while(it->roomTypes.top().baseprice == 0) // remove 0 dollar hotel roomtypes
-    		it->roomTypes.pop();
-  	while(it->roomTypes.top().cap >= num_p) // pop roomytypes with a cap less than user input
-  		it->roomTypes.pop();
-
-
-
-  	pair<double,string> temp;
-  	temp.first = it->roomTypes.top().baseprice;
-  	temp.second = it->name_h;
-  	sortprice.insert(temp);
-  }
-  cout << "The cheapest hotel in " << city << "\n\t" << sortprice.begin()->second << " from $"
-  		 << fixed << setprecision(2) << sortprice.begin()->first << endl;
-
-
-
-
-
 
 
 
 
   cout << "finish" << endl;
 	return 0;
+}
+
+void reserve()
+{
+	string buf;
+	int acc_num;
+	cout << "Enter your account number: ";
+	getline(cin, buf);
+	while(buf.c_str() == 0)
+	{
+		cout << "Invalid account number";
+		getline(cin, buf);
+
+	}
+
+
+
+
 }
