@@ -44,21 +44,23 @@ public:
 template<typename K, typename V>
 BinarySearchTree<K,V>::BinarySearchTree(const BinarySearchTree& original)
 {
-	if (rootNode == original) return;
+	if (rootNode == original.rootNode) return *this;
 	rootNode = 0;
 	if (original.rootNode) copyTree(rootNode = new Node, original.rootNode);
 	siz = original.siz;
 }
 
 template<typename K, typename V>
-BinarySearchTree<K,V>& BinarySearchTree<K,V>:: operator=(const BinarySearchTree<K, V>& original)
+BinarySearchTree<K,V>& BinarySearchTree<K,V>::operator=(const BinarySearchTree<K, V>& original)
 {
 	if(this == &original) return *this;
 
-	if (rootNode == original) return;
+	if (rootNode == original.rootNode) return *this;
 	rootNode = 0;
 	if (original.rootNode) copyTree(rootNode = new Node, original.rootNode);
 	siz = original.siz;
+
+	return *this;
 }
 
 template<typename K, typename V>
