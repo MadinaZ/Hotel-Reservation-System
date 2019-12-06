@@ -1,13 +1,6 @@
-//
-//  DynamicArray.h
-//  lab_5.1
-//
-//  Created by Madina on 9/25/19.
-//  Copyright © 2019 Madina. All rights reserved.
-
 #ifndef DynamicArray_h
 #define DynamicArray_h
-
+//min max return
 template<typename T>
 class DynamicArray
 {
@@ -23,6 +16,7 @@ public:
     void capacity(int);
     T operator[ ] (int) const;
     T& operator[ ] (int);
+    int at(T&);
 };
 
 template<typename T>
@@ -30,7 +24,7 @@ DynamicArray<T>::DynamicArray(int cap)
 {
     this->cap = cap;
     value = new T[cap];
-    
+
     for(int i = 0; i < cap; i++)
         value[i] = T();
 }
@@ -40,7 +34,7 @@ DynamicArray<T>::DynamicArray(const DynamicArray<T>& original)
 {
     cap = original.cap;
     value = new T[cap];
-    
+
     for(int i = 0; i < cap; i++)
         value[i] = original.value[i];
     dummy = original.dummy;
@@ -52,7 +46,7 @@ DynamicArray<T>& DynamicArray<T>::operator=(const DynamicArray<T>& original)
     if(this != &original)
     {
         delete [ ] value;
-        
+
         cap = original.cap;
         value = new T[cap];
         for(int i = 0; i < cap; i++)
@@ -74,7 +68,7 @@ void DynamicArray<T>:: capacity(int cap)
     T* temp = new T[cap];
     for(int i = 0; i < this->cap; i++)
         temp[i] = value[i];
-    
+
     for(int i = this->cap; i < cap; i++)
         temp[i] = T();
     delete [ ] value;
@@ -103,4 +97,15 @@ T& DynamicArray<T>:: operator[ ] (int index)
         return value[index];
 }
 
+template<typename T>
+int DynamicArray<T>::at(T& val)
+{
+    for(int i = 0; i < this->cap; i++)
+    {
+        if(val == value[i])
+            return i;
+    }
+    return -1;
+}
 #endif /* DynamicArray_h */
+
