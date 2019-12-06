@@ -11,14 +11,14 @@ using namespace std;
 template<typename V, int CAP>
 class StaticPQ
 {
-	V values[CAP];
+	V* values;
 	int siz;
 	V dummy;
 
 
 public:
 	StaticPQ();
-//	StaticPQ<V, CAP>& operator=(const StaticPQ<V, CAP>& ori);
+	StaticPQ<V, CAP>& operator=(const StaticPQ<V, CAP>&);
 	int capacity() { return CAP; }
 	void push(const V&);
 	void pop();
@@ -30,12 +30,27 @@ public:
 
 template<typename V, int CAP>
 StaticPQ<V, CAP>::StaticPQ()
-:siz(0)
+:values(new V[CAP])
+,siz(0)
 ,dummy(V())
 {
 	for(int i = 0; i < CAP; i++)
 		values[i] = V();
 };
+
+template<typename V, int CAP>
+StaticPQ<V, CAP>& StaticPQ<V,CAP>::operator=(const StaticPQ<V, CAP>& ori)
+{
+	if(this == &ori) return *this;
+
+	delete[] values;
+	for(int i = 0; i < CAP; i++)
+		values[i] = ori.values[i];
+	siz = ori.siz;
+	dummy = ori.dummy;
+
+	return *this;
+}
 
 template<typename V, int CAP>
 void StaticPQ<V, CAP>::push(const V& value)
