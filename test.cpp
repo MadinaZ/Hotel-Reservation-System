@@ -1,5 +1,5 @@
 //#include "AssociativeArray.h"
-#include "DynamicArray.h"
+//#include "DynamicArray.h"
 #include "SortableArray.h"
 #include "BinarySearchTree.h"
 #include "StaticPQ.h"
@@ -131,7 +131,7 @@ void reserve(list<Hotel>&, BinarySearchTree<int,SortableArray<ReserveInfo> >&, s
 int outputHotel(list<Hotel>&, string, int);
 void outputAllHotel(list<Hotel>&, int);
 int newAccnum(); //gives a new account number
-int convertRoomNum(list<Hotel>::iterator, int);
+char* convertRoomNum(list<Hotel>::iterator, int);
 
 
 int main()
@@ -139,7 +139,7 @@ int main()
 
 
 	BinarySearchTree<string, list<Hotel> > hotels;	//key: city
-	BinarySearchTree<int,SortableArray<ReserveInfo> >ri_Info; // key: roomNum
+	BinarySearchTree<int,SortableArray<ReserveInfo> >ri_Info; // key: roomChar
 	//AssociativeArray<string, set<Hotel> > hotels;
 //	BinarySearchTree<string, StaticPQ<RoomTypes,10> > hotel_name; // key: hotel name, value:roomtypes
 	ifstream inHotel("newHotel.dat", ios::in | ios::binary);
@@ -375,7 +375,8 @@ void reserve(list<Hotel>& h, BinarySearchTree<int,SortableArray<ReserveInfo> >& 
 	string buf, buf2;
 	list<Hotel>::iterator it = searchHotel(h, name_h);
 	ReserveInfo r_info;
-	int acc_num,room_num,start_date,end_date;
+	int acc_num,start_date,end_date;
+	int room_num = 0;
 
 
 
@@ -418,8 +419,8 @@ void reserve(list<Hotel>& h, BinarySearchTree<int,SortableArray<ReserveInfo> >& 
 	for(int i = 0; i < type; i++) // go to the room type of the hotel
 		it->roomTypes.pop();
 
-	room_num = convertRoomNum(it, type);
-
+	//roomChar = convertRoomNum(it, type);
+	cout << room_num << endl;
 
 		bool book = false;
 		for(int i = 0; i < ri[room_num].capacity(); i++)
@@ -446,8 +447,15 @@ void reserve(list<Hotel>& h, BinarySearchTree<int,SortableArray<ReserveInfo> >& 
 			it->roomTypes.top().roomList[0].reserved_num++;
 		}
 
+		r_info.setStartDate(start_date);
+		r_info.setEndDate(end_date);
+		r_info.setRoomNum(room_num);
+
 		outUser.seekp(0, ios::end);
-		outUser.write(reinterpret_cast <char*>(&ri_Read), sizeof(ReserveInfo))
+		outUser.write(reinterpret_cast <const char*>(&r_info), sizeof(ReserveInfo));
+
+		cout << "Booking is done!" << endl;
+		cout << acc_num << endl << room_num << endl << start_date << end_date;
 
 
 }
@@ -521,6 +529,19 @@ int newAccnum()
 	return 0;
 }
 
+/*
+char* convertRoomNum(list<Hotel>::iterator it, int type)
+{
+	char roomChar[45];
+
+	for(int i = 0; i < type; i++)
+		it->roomTypes.pop();
+	strcpy(roomChar, it->name_h.c_str());
+	strcat(roomChar, "-");
+	strcat(roomChar,it->roomTypes.top().name_rt.c_str());
+
+	return roomChar;
+}
 
 int convertRoomNum(list<Hotel>::iterator it, int type) // convert hotel name(string) to integer, then add room number
 {
@@ -551,3 +572,4 @@ int convertRoomNum(list<Hotel>::iterator it, int type) // convert hotel name(str
 
 	return value += room_num;
 }
+*/

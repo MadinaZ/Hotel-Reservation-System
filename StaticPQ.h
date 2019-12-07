@@ -22,7 +22,7 @@ public:
 	StaticPQ();
 	StaticPQ<V, CAP>& operator=(const StaticPQ<V, CAP>&);
 	const V& operator[](int) const; // cannot access elements in order , but OK
-	V& operator[](int);
+	V& operator[](int);						  // cannot access elements in order , but OK
 	int index(int) const;
 	int capacity() { return CAP; }
 	void push(const V&);

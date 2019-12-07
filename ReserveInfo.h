@@ -4,7 +4,8 @@
 class ReserveInfo
 {
   int customerNum;
-	int roomNum;
+  int roomNum;
+	//char roomChar[45];
   int startDate;
   int endDate;
 
