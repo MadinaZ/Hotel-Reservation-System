@@ -44,8 +44,8 @@ StaticArray<T,CAP>& StaticArray<T,CAP>::operator=(const StaticArray<T,CAP>& ori)
 template<typename T, int CAP>
 const T& StaticArray<T, CAP>::operator[](int index) const
 {
-	if(index < 0 || index >= CAP) return dummy;
-	else return values[index];
+  if(index < 0 || index >= CAP) return dummy;
+  else return values[index];
 }
 
 template<typename T, int CAP>

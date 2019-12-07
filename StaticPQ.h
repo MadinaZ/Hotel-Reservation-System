@@ -1,5 +1,7 @@
 //  Programmer: Hiroaki Takeuchi
 //  Programmer's ID: 1718699
+#include "safedelete.h"
+
 #include <algorithm>
 using namespace std;
 
@@ -19,6 +21,9 @@ class StaticPQ
 public:
 	StaticPQ();
 	StaticPQ<V, CAP>& operator=(const StaticPQ<V, CAP>&);
+	const V& operator[](int) const; // cannot access elements in order , but OK
+	V& operator[](int);
+	int index(int) const;
 	int capacity() { return CAP; }
 	void push(const V&);
 	void pop();
@@ -43,13 +48,29 @@ StaticPQ<V, CAP>& StaticPQ<V,CAP>::operator=(const StaticPQ<V, CAP>& ori)
 {
 	if(this == &ori) return *this;
 
-	delete[] values;
+	safedeleteArray(values);
 	for(int i = 0; i < CAP; i++)
 		values[i] = ori.values[i];
 	siz = ori.siz;
 	dummy = ori.dummy;
 
 	return *this;
+}
+
+template<typename V, int CAP>
+const V& StaticPQ<V, CAP>:: operator[](int index) const
+{
+  if(index < 0 || index >= CAP) return dummy;
+  else return values[index];
+}
+
+template<typename V, int CAP>
+V& StaticPQ<V, CAP>:: operator[](int index)
+{
+	if(index < 0 || index >= CAP)
+		return dummy;
+	else
+		return values[index];
 }
 
 template<typename V, int CAP>

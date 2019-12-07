@@ -1,13 +1,8 @@
+#include "safedelete.h"
+
 #ifndef DynamicArray_h
 #define DynamicArray_h
-/*
-template<typename T>
-void safedeleteArray(T*& p)
-{
-  delete [] p;
-  p = 0;
-}
-*/
+
 
 template<typename T>
 class DynamicArray
