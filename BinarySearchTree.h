@@ -44,7 +44,7 @@ public:
 template<typename K, typename V>
 BinarySearchTree<K,V>::BinarySearchTree(const BinarySearchTree& original)
 {
-	if (rootNode == original.rootNode) return *this;
+	if (rootNode == original.rootNode) return;
 	rootNode = 0;
 	if (original.rootNode) copyTree(rootNode = new Node, original.rootNode);
 	siz = original.siz;
