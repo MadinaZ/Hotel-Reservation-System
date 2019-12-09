@@ -1,32 +1,35 @@
 #ifndef RESERVEINFO_H
 #define RESERVEINFO_H
 
+#include <string>
+using namespace std;
+
 class ReserveInfo
 {
   int customerNum;
-  int roomNum;
-	//char roomChar[45];
+ // int roomNum
   int startDate;
   int endDate;
+  char roomChar[50];
 
 public:
-  ReserveInfo():customerNum(),roomNum(),startDate(22),endDate(){};
-  ReserveInfo(int a,int b,int c, int d):customerNum(a),roomNum(b),startDate(c),endDate(d){};
+  ReserveInfo():customerNum(),startDate(22),endDate(),roomChar(){};
+  ReserveInfo(int a,int b,int c, const string& room);
 
   friend bool operator<(const ReserveInfo& a, const ReserveInfo& b) { return (a.endDate < b.endDate); }
   ReserveInfo& operator=(const ReserveInfo& ori);
  // friend const ReserveInfo& operator[](int) const;
   //friend ReserveInfo& operator[]();
 
-  void setCusNum(int);
-  void setRoomNum(int);
-  void setStartDate(int);
-  void setEndDate(int);
+  void setCusNum(int a) { this->customerNum = a; }
+  void setStartDate(int a) { this->startDate = a; }
+  void setEndDate(int a) { this->endDate = a; }
+  void setRoomChar(const string&);
 
   int getCusNum() const { return customerNum; }
-  int getRoomNum() const { return roomNum; }
   int getStartDate() const { return startDate; }
   int getEndDate() const { return endDate; }
+  string getRoomChar() const { return roomChar; }
 
 };
 /*
@@ -39,37 +42,34 @@ ReserveInfo::ReserveInfo(const ReserveInfo& ori)
 }
 */
 
+ReserveInfo::ReserveInfo(int a,int b,int c, const string& room)
+:customerNum(a)
+,startDate(b)
+,endDate(c)
+{
+	setRoomChar(room);
+}
+
 ReserveInfo& ReserveInfo::operator=(const ReserveInfo& ori)
 {
 	if(this == &ori) return *this;
 
-	this->customerNum = ori.getCusNum();
-	this->roomNum = ori.getRoomNum();
-	this->startDate = ori.getStartDate();
-	this->endDate = ori.getEndDate();
+	setCusNum(ori.getCusNum());
+	setRoomChar(ori.getRoomChar());
+	setStartDate(ori.getStartDate());
+	setEndDate(ori.getEndDate());
 
 	return *this;
 }
 
-void ReserveInfo::setCusNum(int a)
+void ReserveInfo::setRoomChar(const string& a)
 {
-	this->customerNum = a;
+	int length = (int)a.size();
+	length = (length < 50 ? length : 49); // not necessary, but just in case
+	a.copy(this->roomChar, length);
+	this->roomChar[length] = '\0';
 }
 
-void ReserveInfo::setRoomNum(int a)
-{
-	this->roomNum = a;
-}
-
-void ReserveInfo::setStartDate(int a)
-{
-	this->startDate = a;
-}
-
-void ReserveInfo::setEndDate(int a)
-{
-	this->endDate = a;
-}
 
 
 
