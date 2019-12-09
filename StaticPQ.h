@@ -35,8 +35,8 @@ public:
 	bool empty() const { return siz == 0 ? true : false; }
 	void clear() {siz = 0; }
 
-	void topKeepandPop();
-	void keepPushBack();
+	void topKeepandPop(); //pop and keep the popped object in a static array
+	void keepPushBack(); // push the kept objects back to the PQ
 };
 
 template<typename V, int CAP>
