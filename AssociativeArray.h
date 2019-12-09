@@ -1,22 +1,12 @@
 #ifndef AssociativeArray_h
 #define AssociativeArray_h
+
+#include "safedelete.h"
+
 #include <queue>
 using namespace std;
 
 
-template<typename T>
-void safeDelete(T*& p)
-{
-	delete p;
-	p = nullptr;
-}
-
-template<typename T>
-void safeDeleteArray(T*& p)
-{
-	delete [] p;
-	p = nullptr;
-}
 
 /////////
 template<typename K, typename V>
@@ -47,7 +37,7 @@ public:
   AssociativeArray(int = 2);
   AssociativeArray(const AssociativeArray<K,V>&);
   AssociativeArray<K,V>& operator=(const AssociativeArray<K,V>&);
-  ~AssociativeArray() { safeDeleteArray(data); }
+  ~AssociativeArray() { safedeleteArray(data); }
   V operator[](const K&) const;
   V& operator[](const K&);
   bool containsKey(const K&) const;
@@ -66,7 +56,7 @@ void AssociativeArray<K,V>::capacity(int cap)
   int limit = (cap < this->cap ? cap : this->cap);
   for(int i = 0; i < limit; i++)
     temp[i].copy(data[i]);
-  safeDeleteArray(data);
+  safedeleteArray(data);
   data = temp;
   this->cap = cap;
 }
@@ -74,15 +64,15 @@ void AssociativeArray<K,V>::capacity(int cap)
 template<typename K, typename V>
 AssociativeArray<K,V>::AssociativeArray(int cap)
 :data(new Node[cap])
-,cap(cap)
 ,siz(0)
+,cap(cap)
 {}
 
 template<typename K, typename V>
 AssociativeArray<K,V>::AssociativeArray(const AssociativeArray<K,V>& original)
 :data(new Node[original.cap])
-,cap(original.cap)
 ,siz(original.siz)
+,cap(original.cap)
 {
   for(int i = 0; i < cap; i++)
     data[i].copy(original.data[i]);
@@ -93,7 +83,7 @@ AssociativeArray<K,V>& AssociativeArray<K,V>::operator=(const AssociativeArray<K
 {
   if(this == &original) { return *this; }
   
-  safeDeleteArray(data);
+  safedeleteArray(data);
   this->cap = original.cap;
   data = new Node[cap];
   for(int i = 0; i < cap; i++)
