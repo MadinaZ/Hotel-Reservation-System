@@ -131,46 +131,34 @@ double Hotel::min_price(int num_ppl)
 	return 0.011; // test need uddate@@@@@@@
 }
 
-void cancel(BinarySearchTree<string,SortableArray<ReserveInfo> >&);
+
 list<Hotel>::iterator searchHotel(list<Hotel>&, string);
 bool reserve(BinarySearchTree<string, list<Hotel> >&, BinarySearchTree<string,SortableArray<ReserveInfo> >&, list<Hotel>::iterator, int);
 int outputHotel(list<Hotel>&, list<Hotel>::iterator);
-void outputAllHotel(list<Hotel>&, int);
+list<Hotel>::iterator outputAllHotel(list<Hotel>&, list<Hotel>::iterator);
 int newAccnum(); //gives a new account number
 string convertRoomNum(list<Hotel>::iterator, int,BinarySearchTree<string,SortableArray<ReserveInfo> >&);
 void restoreHotels(BinarySearchTree<string, list<Hotel> >&, string);
-
+void cancel(BinarySearchTree<string,SortableArray<ReserveInfo> >&);
 
 int main()
 {
-
-
 	BinarySearchTree<string, list<Hotel> > hotels;	//key: city
 	BinarySearchTree<string,SortableArray<ReserveInfo> >ri_room; // key: roomChar
 	BinarySearchTree<int,SortableArray<ReserveInfo> >ri_user; // key: account number
 
-	//BinarySearchTree<string, set<Hotel> > hotels;
-//	BinarySearchTree<string, StaticPQ<RoomTypes,10> > hotel_name; // key: hotel name, value:roomtypes
 	ifstream inHotel("newHotel.dat", ios::in | ios::binary);
 	ifstream inUser("user.dat", ios::in | ios::binary);
 	ofstream outUser("user.dat", ios::out | ios::binary);
 	ofstream outtxtUser("user.txt");
 
-
-
 	Hotels hotel;
   inHotel.seekg(0);
   inHotel.read(reinterpret_cast <char*>(&hotel), sizeof(Hotels));
-
-
-
   while(!inHotel.eof() && inHotel)
   {
     //cout << hotel.name<< hotel.star << endl;
-
     Hotel temp(hotel.name,hotel.city,hotel.star,hotel.rate); // create temp hotel
-
-
     //store 7 types info
     RoomTypes temp1(hotel.type1,hotel.baseprice[0],hotel.cap[0],hotel.num_rooms[0]);
     RoomTypes temp2(hotel.type2,hotel.baseprice[1],hotel.cap[1],hotel.num_rooms[1]);
@@ -179,10 +167,8 @@ int main()
     RoomTypes temp5(hotel.type5,hotel.baseprice[4],hotel.cap[4],hotel.num_rooms[4]);
     RoomTypes temp6(hotel.type6,hotel.baseprice[5],hotel.cap[5],hotel.num_rooms[5]);
     RoomTypes temp7(hotel.type7,hotel.baseprice[6],hotel.cap[6],hotel.num_rooms[6]);
-
    // cout << hotel.type1 << endl << hotel.type2 << endl << hotel.type3 << endl << hotel.type4 << endl
    // 		 << hotel.type5 << endl << hotel.type6 << endl << hotel.type7 << endl;
-
     for(int i = 0 ; i < temp1.num_rooms; i++)
     	temp1.roomList[i].room_num = i + 1;
     for(int i = 0 ; i < temp2.num_rooms; i++)
@@ -197,8 +183,6 @@ int main()
     	temp6.roomList[i].room_num = i + 1;
     for(int i = 0 ; i < temp7.num_rooms; i++)
     	temp7.roomList[i].room_num = i + 1;
-
-
     //store roomtype
     temp.roomTypes.push(temp1);
     temp.roomTypes.push(temp2);
@@ -208,40 +192,39 @@ int main()
     temp.roomTypes.push(temp6);
     temp.roomTypes.push(temp7);
 
-
     hotels[temp.city].push_back(temp);
-
-
     inHotel.read(reinterpret_cast<char*>(&hotel), sizeof(Hotels));
-
   } // finish storing hotel info
   inHotel.close();
-
 
   //read user reserve info
 	ReserveInfo ri_Read;
   inUser.seekg(0);
   inUser.read(reinterpret_cast <char*>(&ri_Read), sizeof(ReserveInfo));
   int counter = 0;
+  int aa = 0;
   while(!inUser.eof() && inUser)
   {
-  	ri_room[ri_Read.getRoomChar()][counter].setCusNum(ri_Read.getCusNum());
-  	ri_room[ri_Read.getRoomChar()][counter].setRoomChar(ri_Read.getRoomChar());
-		ri_room[ri_Read.getRoomChar()][counter].setStartDate(ri_Read.getStartDate());
-		ri_room[ri_Read.getRoomChar()][counter].setEndDate(ri_Read.getEndDate());
+  	if(ri_Read.getCusNum() != 0)
+  	{
+    	outtxtUser << ri_Read.getCusNum()	<< '\t' << ri_Read.getRoomChar() << '\t' << ri_Read.getStartDate() << '\t' << ri_Read.getEndDate() << endl;
 
-  	ri_user[ri_Read.getCusNum()][counter++].setCusNum(ri_Read.getCusNum());
-  	ri_user[ri_Read.getCusNum()][counter++].setRoomChar(ri_Read.getRoomChar());
-		ri_user[ri_Read.getCusNum()][counter++].setStartDate(ri_Read.getStartDate());
-		ri_user[ri_Read.getCusNum()][counter++].setEndDate(ri_Read.getEndDate());
+			ri_room[ri_Read.getRoomChar()][counter].setCusNum(ri_Read.getCusNum());
+			ri_room[ri_Read.getRoomChar()][counter].setRoomChar(ri_Read.getRoomChar());
+			ri_room[ri_Read.getRoomChar()][counter].setStartDate(ri_Read.getStartDate());
+			ri_room[ri_Read.getRoomChar()][counter].setEndDate(ri_Read.getEndDate());
+
+			ri_user[ri_Read.getCusNum()][counter++].setCusNum(ri_Read.getCusNum());
+			ri_user[ri_Read.getCusNum()][counter++].setRoomChar(ri_Read.getRoomChar());
+			ri_user[ri_Read.getCusNum()][counter++].setStartDate(ri_Read.getStartDate());
+			ri_user[ri_Read.getCusNum()][counter++].setEndDate(ri_Read.getEndDate());
+			++aa;
+  	}
 
   	inUser.read(reinterpret_cast <char*>(&ri_Read), sizeof(ReserveInfo));
   }
-
-
-  //cout << ri_room["Hotel-KingSuite-1"][0].getCusNum();
-
-//test
+//  cout << aa;
+//  cout << ri_room["Rochester Hotel-Luxury-1"][0].getCusNum();
   list<Hotel>::iterator it;
   string buf, city;
   int num_p, type;
@@ -263,13 +246,18 @@ int main()
   	cin >> buf;
   	cout << endl;
   }
-
   switch(stoi(buf))
   {
   case 1: break;
   case 2: cancel(ri_room);
+  				cout << "Search hotels (Y/N)? ";
+  				cin >> buf;
+  				if(buf[0] == 'N' || buf[0] == 'n')
+  				{
+  				  cout << "Thank you for choosing our booking system!" << endl;
+  				  return 0;
+  				}
   }
-
   while(true)
   {
 
@@ -283,11 +271,9 @@ int main()
 			getline(cin, city);
 		}
 
-
 		set<pair<double,string> > sortprice;
     while(true)
     {
-
 			cout << "How many people? ";
 			cin >> buf;
 			num_p = atoi(buf.c_str());
@@ -307,13 +293,10 @@ int main()
 			for(it = hotels[city].begin(); it != hotels[city].end(); i++, it++)
 			{
 				int ori_size = it->roomTypes.size();
-
 				while(it->roomTypes.top().cap < num_p) // pop room types with a cap less than user input
 				{
 					it->roomTypes.topKeepandPop();
-
 					if(++it->pop_counter == ori_size) break; // no more pop than the size of room types
-
 				}
 				if(it->roomTypes.size() == 0) continue;
 
@@ -322,15 +305,15 @@ int main()
 				temp.second = it->name_h;
 				sortprice.insert(temp);
 			}
-
 			if(sortprice.size() == 0)
+			{
 				cout << "No hotel found" << endl;
+				continue;
+			}
 			else
 				break;
     }
-
     cout << endl;
-
 		cout << "   The cheapest hotel for " << num_p << (num_p == 1 ? " person" : " people") << " in "<< city << " is\n --→  『 " << sortprice.begin()->second << " 』  from   $"
 				 << fixed << setprecision(2) << sortprice.begin()->first << endl;
 		it = searchHotel(hotels[city],sortprice.begin()->second);
@@ -359,39 +342,31 @@ int main()
 		}
 		else // choice 2
 		{
-			cout << "Wanna see the list of the hotels in " << city << " ? (Y/N) ";
-			cin >> buf;
-			cout << endl;
-			if(buf[0] == 'y' || buf[0] == 'Y')
-				outputAllHotel(hotels[city],num_p);
-			else
+			it = hotels[city].begin();
+			it = outputAllHotel(hotels[city],it);
+
+			it->roomTypes.keepPushBack();
+			int ori_size = it->roomTypes.size();
+			while(it->roomTypes.top().cap < num_p) // pop room types with a cap less than user input
 			{
-				cout << "Search hotel again? (Y/N) ";
-				cin >> buf;
-				if(buf[0] == 'y' || buf[0] == 'Y')
-					continue;
-				else
-					break;
-
+				it->roomTypes.topKeepandPop();
+				if(++it->pop_counter == ori_size) break; // no more pop than the size of room types
 			}
+			type = outputHotel(hotels[city],it) - 1;
+			if(reserve(hotels, ri_room, it, type))
+				cout << "done";
 		}
-
+		cout << "Search hotel again? (Y/N) ";
+						cin >> buf;
+						if(buf[0] == 'y' || buf[0] == 'Y')
+							continue;
+						else
+							break;
   }
-
-
-
-
+  cout << "Thank you for choosing our booking system!" << endl;
   cout << "finish" << endl;
 	return 0;
 }
-
-
-
-void cancel(BinarySearchTree<string,SortableArray<ReserveInfo> >& ri)
-{
-	cout << "test";
-}
-
 
 bool reserve(BinarySearchTree<string, list<Hotel> >& h, BinarySearchTree<string,SortableArray<ReserveInfo> >& ri,list<Hotel>::iterator it, int type)
 {
@@ -399,6 +374,13 @@ bool reserve(BinarySearchTree<string, list<Hotel> >& h, BinarySearchTree<string,
 	string buf;
 
 	ReserveInfo r_info;
+  // only the first time
+  bool first = false;
+  if(first)
+  {
+  	for(int i = 0; i < 10000; i++)
+  		outUser.write(reinterpret_cast<const char*>(& r_info), sizeof(ReserveInfo));
+  }
 	int acc_num,start_date,end_date;
 	string roomChar;
 	roomChar = convertRoomNum(it, type, ri);
@@ -406,7 +388,7 @@ bool reserve(BinarySearchTree<string, list<Hotel> >& h, BinarySearchTree<string,
 
 
 	cout << "   Booking 『 " << roomChar << " 』 ...\n\n"
-			 << "Enter your account number (If you don't have one, enter 'x'):  ";
+			 << "Enter your account number (1 - 10,000, If you don't have one, enter 'x'):  ";
 	cin.ignore(1000,'\n');
 	getline(cin, buf);
 	if(buf[0] == 'x' || buf[0] == 'X')
@@ -417,7 +399,7 @@ bool reserve(BinarySearchTree<string, list<Hotel> >& h, BinarySearchTree<string,
 	}
 	else
 	{
-		while(atoi(buf.c_str()) == 0)
+		while(atoi(buf.c_str()) < 0 || atoi(buf.c_str()) > 100000)
 		{
 			if(buf[0] == 'x' || buf[0] == 'X')
 			{
@@ -436,7 +418,6 @@ bool reserve(BinarySearchTree<string, list<Hotel> >& h, BinarySearchTree<string,
 
 	// if the user info exit?? ?@@@@@@@
 
-// need validation!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	cout << "From what day (YYYY.MM.DD) ?? ";
 	getline(cin,buf);
 
@@ -449,7 +430,6 @@ bool reserve(BinarySearchTree<string, list<Hotel> >& h, BinarySearchTree<string,
 	buf.erase(4,1);
 	buf.erase(6,1);
 	start_date = stoi(buf);
-
 
 	cout << "To what day (YYYY.MM.DD) ?? ";
 	getline(cin,buf);
@@ -473,8 +453,6 @@ bool reserve(BinarySearchTree<string, list<Hotel> >& h, BinarySearchTree<string,
 			getline(cin,buf);
 		}
 	}
-
-
 	int aaa;
 
 		bool capa = false; // caoacity of sortable array
@@ -508,7 +486,7 @@ bool reserve(BinarySearchTree<string, list<Hotel> >& h, BinarySearchTree<string,
 		r_info.setEndDate(end_date);
 		r_info.setRoomChar(roomChar);
 
-		outUser.seekp(0, ios::end);
+		outUser.seekp((r_info.getCusNum() - 1) * sizeof(ReserveInfo));
 		outUser.write(reinterpret_cast <const char*>(&r_info), sizeof(ReserveInfo));
 		ofstream outtxtUser("user.txt");
 		outtxtUser  << acc_num << '\t' << roomChar << '\t' << start_date << '\t' << end_date << endl;
@@ -519,17 +497,17 @@ bool reserve(BinarySearchTree<string, list<Hotel> >& h, BinarySearchTree<string,
 
 		ReserveInfo ri_Read;
 		ifstream inUser("user.dat", ios::in | ios::binary);
-	  inUser.seekg(0);
+	 // inUser.seekg((r_info.getCusNum() - 1) * sizeof(ReserveInfo));
+		inUser.seekg(0);
 	  inUser.read(reinterpret_cast <char*>(&ri_Read), sizeof(ReserveInfo));
 	  cout << ri_Read.getRoomChar();
 		cout << endl<< endl;
-
-	//	cout << it->roomTypes.top().roomList[0].reserved_num;
-	//	cout <<ri[roomChar][ri[roomChar].capacity()].getRoomChar();
+	  inUser.read(reinterpret_cast <char*>(&ri_Read), sizeof(ReserveInfo));
+	  cout << ri_Read.getRoomChar();
+//		cout <<ri[roomChar][ri[roomChar].capacity()].getRoomChar();
 		restoreHotels(h, it->city);
 
 		return true;
-
 }
 
 list<Hotel>::iterator searchHotel(list<Hotel>& h, string name)
@@ -545,7 +523,6 @@ list<Hotel>::iterator searchHotel(list<Hotel>& h, string name)
 int outputHotel(list<Hotel>& h, list<Hotel>::iterator it)
 {
 	string buf;
-
 	int size = it->roomTypes.size();
 
 	cout.setf(ios::left);
@@ -553,7 +530,6 @@ int outputHotel(list<Hotel>& h, list<Hotel>::iterator it)
 	cout << "   『 " << it->name_h << " 』\n" << endl;
 	cout << left << " " << setw(8) << "Choice" << setw(15) << "Room Type" << right << setw(8) << "Price($)" << setw(15) << "Capacity(ppl)" << endl
 			 << "-------------------------------------------------" << endl;
-
 	for(int i = 0; i < size; i++)
 	{
 		cout << left << "    " << setw(5) << i + 1 << setw(15) << it->roomTypes.top().name_rt << right << setw(8) << it->roomTypes.top().baseprice << "     " << it->roomTypes.top().cap << endl;
@@ -562,42 +538,53 @@ int outputHotel(list<Hotel>& h, list<Hotel>::iterator it)
 	cout << endl;
 	cout << "Choose a room type (1 - " << size  << "):";
 	cin >> buf;
-
 	while(atoi(buf.c_str()) < 1 || atoi(buf.c_str()) > size)
 	{
 		cout << "Invalid input\n"
 		     << "Choose a room type (1 - " << size  << "): ";
 		cin >> buf;
 	}
-
 	cout << endl << endl << endl;
 	return stoi(buf) + it->pop_counter; // number from the top of hotels + pop_counter = # from the top of hotels
 }
 
-void outputAllHotel(list<Hotel>& h, int num_p)
+list<Hotel>::iterator outputAllHotel(list<Hotel>& h, list<Hotel>::iterator it)
 {
-	list<Hotel>::iterator it;
-	int size = it->roomTypes.size();
-	int pop_counter[size];
-
-	for(it = h.begin(); it != h.end(); it++)
+	string buf;
+	//int size = it->roomTypes.size();
+	int count = 0;
+	for(;it != h.end(); ++it, ++count)
 	{
-		cout.setf(ios::left);
-		cout << it->name_h << endl;
-		cout << " " << setw(8) << "Choice" << setw(15) << "Room Type" << setw(9) << "Price($)" << setw(25) << "Capacity(ppl)" << endl
-				 << "---------------------------------------------" << endl;
-
 		int size = it->roomTypes.size();
-		cout << size;
+		cout.setf(ios::left);
+		cout << endl << endl;
+		cout <<
+		cout << "   " << count + 1 << ".『 "  << it->name_h << " 』\t" << "Star: " << it->star << "   Rate by users: " << it->rate << endl << endl;
+		cout << left << " " << setw(8) << "Choice" << setw(15) << "Room Type" << right << setw(8) << "Price($)" << setw(15) << "Capacity(ppl)" << endl
+				 << "-------------------------------------------------" << endl;
 		for(int i = 0; i < size; i++)
-			cout << "    " << setw(5) << i + 1 << setw(15) << it->roomTypes.top().name_rt << setw(9) << it->roomTypes.top().baseprice << "     " << it->roomTypes.top().cap << endl;
+		{
+			cout << left << "    " << setw(5) << i + 1 << setw(15) << it->roomTypes.top().name_rt << right << setw(8) << it->roomTypes.top().baseprice << "     " << it->roomTypes.top().cap << endl;
+			it->roomTypes.topKeepandPop();
+		}
 		cout << endl;
 	}
+	cout << "Which hotel? (1 - " << (count) << "): ";
+	cin >> buf;
+	while(atoi(buf.c_str()) > (count) || atoi(buf.c_str()) < 1)
+	{
+		cout << "Invalid input\n";
+		cout << "Which hotel? (1 - " << (count) << "): ";
+		cin >> buf;
+	}
+	for(int i = 0; i <= count - stoi(buf); i++)
+		--it;
+	return it;
 }
 
-int newAccnum()
+int newAccnum() // need change
 {
-	return 0;
+	return 0; // check available account number
 }
 
 
@@ -605,14 +592,11 @@ string convertRoomNum(list<Hotel>::iterator it, int type, BinarySearchTree<strin
 {
 	string roomChar;
 	int counter = 0;
-	int date = 20191209; // start date wanna stay
+	int date = 20191209; // start date wanna stay  testing
 
-	cout << "test" << endl;
 	it->roomTypes.keepPushBack();
-
 	for(int i = 0; i < type - 1; i++)
 		it->roomTypes.topKeepandPop();
-
 	bool available = false;
 	if(ri_room[roomChar][0].getCusNum() == 0)
 	{
@@ -633,22 +617,17 @@ string convertRoomNum(list<Hotel>::iterator it, int type, BinarySearchTree<strin
 			roomChar += "-";
 			roomChar += to_string(it->roomTypes.top().roomList[counter++].room_num);
 
-
 			for(int i = 0 ; i < ri_room[roomChar].capacity(); i++) // track all customers book this room
 			{
 				if(ri_room[roomChar][i].getEndDate() >= date)
 					if(ri_room[roomChar][i].getStartDate() <= date)
 							break; // this room is occupied
-
 				available = true;
 			}
 			if(available) break;
 		}
 	}
-
-
 	if(!available) roomChar = "0"; //all booked
-
 
 	return roomChar;
 }
@@ -657,4 +636,9 @@ void restoreHotels(BinarySearchTree<string, list<Hotel> >& h, string city) //pus
 {
 	for(list<Hotel>::iterator it = h[city].begin(); it != h[city].end(); ++it)
 		it->roomTypes.keepPushBack();
+}
+
+void cancel(BinarySearchTree<string,SortableArray<ReserveInfo> >& ri)
+{
+	cout << " being built ......" << endl;
 }
