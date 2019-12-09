@@ -1,8 +1,10 @@
 //  Programmer: Hiroaki Takeuchi
 //  Programmer's ID: 1718699
 #include "safedelete.h"
+#include "StaticArray.h"
 
 #include <algorithm>
+#include <list>
 using namespace std;
 
 #ifndef StaticPQ_h
@@ -16,21 +18,25 @@ class StaticPQ
 	V* values;
 	int siz;
 	V dummy;
+	int keeppop_counter;
+	StaticArray<V,CAP> keep;
 
 
 public:
 	StaticPQ();
 	StaticPQ<V, CAP>& operator=(const StaticPQ<V, CAP>&);
-	const V& operator[](int) const; // cannot access elements in order , but OK
-	V& operator[](int);						  // cannot access elements in order , but OK
 	int index(int) const;
 	int capacity() { return CAP; }
 	void push(const V&);
 	void pop();
 	V top() const { return siz == 0 ? V() : values[0]; }
 	int size() const { return siz; }
+	int sizeKeep() const { return keeppop_counter; }
 	bool empty() const { return siz == 0 ? true : false; }
 	void clear() {siz = 0; }
+
+	void topKeepandPop();
+	void keepPushBack();
 };
 
 template<typename V, int CAP>
@@ -38,6 +44,7 @@ StaticPQ<V, CAP>::StaticPQ()
 :values(new V[CAP])
 ,siz(0)
 ,dummy(V())
+,keeppop_counter(0)
 {
 	for(int i = 0; i < CAP; i++)
 		values[i] = V();
@@ -46,32 +53,19 @@ StaticPQ<V, CAP>::StaticPQ()
 template<typename V, int CAP>
 StaticPQ<V, CAP>& StaticPQ<V,CAP>::operator=(const StaticPQ<V, CAP>& ori)
 {
-	if(this == &ori) return *this;
+	if(this == &ori) { return *this; }
 
 	safedeleteArray(values);
+	values = new V[CAP];
 	for(int i = 0; i < CAP; i++)
 		values[i] = ori.values[i];
 	siz = ori.siz;
 	dummy = ori.dummy;
+	keeppop_counter = ori.keeppop_counter;
 
 	return *this;
 }
 
-template<typename V, int CAP>
-const V& StaticPQ<V, CAP>:: operator[](int index) const
-{
-  if(index < 0 || index >= CAP) return dummy;
-  else return values[index];
-}
-
-template<typename V, int CAP>
-V& StaticPQ<V, CAP>:: operator[](int index)
-{
-	if(index < 0 || index >= CAP)
-		return dummy;
-	else
-		return values[index];
-}
 
 template<typename V, int CAP>
 void StaticPQ<V, CAP>::push(const V& value)
@@ -127,5 +121,20 @@ void StaticPQ<V, CAP>::pop()
 	}
 }
 
+template<typename V, int CAP>
+void StaticPQ<V, CAP>::topKeepandPop()
+{
+	keep[keeppop_counter++] = top();
+	pop();
+}
+
+template<typename V, int CAP>
+void StaticPQ<V, CAP>::keepPushBack()
+{
+	for(int i = 0; i < keeppop_counter; i++)
+		push(keep[i]);
+
+	keeppop_counter = 0;
+}
 
 #endif
